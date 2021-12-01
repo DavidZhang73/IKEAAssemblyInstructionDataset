@@ -1,3 +1,4 @@
+import os
 from time import sleep
 
 import requests
@@ -23,3 +24,12 @@ def get_html(url):
 
 def get_json(url):
     return get_response(url).json()
+
+
+def download_binary(url, output_path, output_name):
+    os.makedirs(output_path, exist_ok=True)
+    r = get_response(url, stream=True)
+    with open(os.path.join(output_path, output_name), 'wb') as f:
+        for chunk in r.iter_content(chunk_size=1024):
+            if chunk:
+                f.write(chunk)
