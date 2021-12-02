@@ -13,7 +13,7 @@ def get_response(url, stream=False):
         try:
             return requests.get(url, proxies=PROXIES, stream=stream)
         except Exception as e:
-            print(f'{e}, 等待重试，还剩 {max_try_count - try_count} 次。')
+            print(f'{e}, waiting for retry, {max_try_count - try_count} times remains')
             try_count += 1
             sleep(0.1 * try_count)
 
