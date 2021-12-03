@@ -18,14 +18,21 @@ def get_output_path(item):
 def get_image(item, output_path):
     url = item['mainImageUrl']
     if url:
-        download_binary(url, output_path, _get_output_name(url))
+        item['mainImagePathname'] = download_binary(url, output_path, _get_output_name(url))
+    database.get_collection('item').update_one({'_id': item['_id']}, {'$set': item})
 
 
 def get_manual(item, output_path):
-    for manual in item['manualList']:
+    for i, manual in enumerate(item['manualList']):
         url = manual['url']
         if url:
-            download_binary(url, os.path.join(output_path, 'manual'), _get_output_name(url))
+            item['manualList'][i]['pathname'] = download_binary(
+                url,
+                os.path.join(output_path, 'manual'),
+                _get_output_name(url)
+            )
+
+    database.get_collection('item').update_one({'_id': item['_id']}, {'$set': item})
 
 
 def get_item(item):

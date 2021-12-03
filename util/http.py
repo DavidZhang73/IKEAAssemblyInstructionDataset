@@ -29,7 +29,9 @@ def get_json(url):
 def download_binary(url, output_path, output_name):
     os.makedirs(output_path, exist_ok=True)
     r = get_response(url, stream=True)
-    with open(os.path.join(output_path, output_name), 'wb') as f:
+    pathname = os.path.abspath(os.path.join(output_path, output_name))
+    with open(pathname, 'wb') as f:
         for chunk in r.iter_content(chunk_size=1024):
             if chunk:
                 f.write(chunk)
+    return pathname
