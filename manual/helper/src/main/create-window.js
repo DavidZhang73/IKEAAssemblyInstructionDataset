@@ -5,20 +5,16 @@ const isProd = app.isPackaged
 
 module.exports = function createWindow (windowName = 'main', options = {}) {
   const winOptions = {
-    minWidth: 800,
-    minHeight: 600,
+    minWidth: 1280,
+    minHeight: 720,
     // titleBarStyle: 'hidden',
     autoHideMenuBar: true,
-    trafficLightPosition: {
-      x: 20,
-      y: 32
-    },
     ...options,
     webPreferences: {
       contextIsolation: true,
       devTools: !isProd,
       spellcheck: false,
-      nodeIntegration: true,
+      nodeIntegration: false,
       ...(options.webPreferences || {})
     }
   }

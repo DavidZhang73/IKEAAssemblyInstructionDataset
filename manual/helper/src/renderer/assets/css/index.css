@@ -6,3 +6,11 @@ body {
   /* used for behaving more like an app, selection inside inputs and textareas still work in chromium */
   user-select: none;
 }
+
+input {
+  @apply outline-none p-1 border-2 rounded border-gray-200 focus:border-gray-500;
+}
+
+button {
+  @apply outline-none p-1 border-2 rounded border-gray-200 hover:border-gray-500 text-sm text-center;
+}

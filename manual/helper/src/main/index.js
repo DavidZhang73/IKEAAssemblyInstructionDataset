@@ -1,6 +1,8 @@
 const createWindow = require('./create-window.js')
+const initService = require('./service/index.js')
 const { app } = require('electron')
 const contextMenu = require('electron-context-menu')
+const path = require('path')
 
 try {
   require('electron-reloader')(module)
@@ -11,7 +13,7 @@ contextMenu({
   showCopyImage: false,
   prepend: (defaultActions, params, browserWindow) => [
     {
-      label: 'its like magic 💥'
+      label: 'Jiahao Zhang'
     }
   ]
 })
@@ -31,7 +33,10 @@ function loadVitePage (port) {
 
 function createMainWindow () {
   mainWindow = createWindow('main', {
-    show: false
+    show: false,
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.js')
+    }
   })
   mainWindow.once('close', () => {
     mainWindow = null
@@ -45,6 +50,7 @@ function createMainWindow () {
   }
 
   mainWindow.once('ready-to-show', () => {
+    initService()
     console.log('READY')
     mainWindow.show()
     mainWindow.focus()
