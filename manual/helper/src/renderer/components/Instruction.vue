@@ -68,7 +68,7 @@
         </thead>
         <tbody>
         <tr v-for="(annotation, index) in localAnnotationList">
-          <td>{{ annotation.step }}</td>
+          <td :style="{'background-color': annotation.color}">{{ annotation.step }}</td>
           <td>{{ annotation.page + 1 }}</td>
           <td>{{ utils.toFixed2(annotation.x) }}</td>
           <td>{{ utils.toFixed2(annotation.y) }}</td>
@@ -145,7 +145,6 @@ const handleAnnotationListUpdate = annotationList => {
 }
 
 watch(() => item.value, (newItem) => {
-  localAnnotationList.value = []
   for (let i = 0; i < newItem.manualList.length; i++) {
     getFileURL(newItem.manualList[i].pathname).then(url => {
       newItem.manualList[i].localUrl = url
@@ -155,13 +154,17 @@ watch(() => item.value, (newItem) => {
         newItem.manualList[i].pageList[j].localUrl = url
       })
     }
-    for (let j in newItem.manualList[i].annotationList) {
-      const annotation = newItem.manualList[i].annotationList[j]
-      localAnnotationList.value.push(
-          new ObjectAnnotation(annotation.x, annotation.y, annotation.width, annotation.height, annotation.page, j))
-    }
     currentManual.value = 0
     currentPage.value = 0
+  }
+}, { immediate: true })
+
+watch(() => currentManual.value, (newCurrentManual) => {
+  localAnnotationList.value = []
+  for (let i in item.value.manualList[newCurrentManual].annotationList) {
+    const annotation = item.value.manualList[newCurrentManual].annotationList[i]
+    localAnnotationList.value.push(
+        new ObjectAnnotation(annotation.x, annotation.y, annotation.width, annotation.height, annotation.page, j))
   }
 }, { immediate: true })
 
@@ -186,11 +189,39 @@ const handleLast = () => {
 }
 
 const handleMoveUp = (index) => {
-
+  if (index - 1 >= 0) {
+    [
+      localAnnotationList.value[index - 1].step,
+      localAnnotationList.value[index].step
+    ] = [
+      localAnnotationList.value[index].step,
+      localAnnotationList.value[index - 1].step
+    ];
+    [
+      localAnnotationList.value[index - 1], localAnnotationList.value[index]
+    ] = [
+      localAnnotationList.value[index],
+      localAnnotationList.value[index - 1]
+    ]
+  }
 }
 
 const handleMoveDown = (index) => {
-
+  if (index + 1 < localAnnotationList.value.length) {
+    [
+      localAnnotationList.value[index + 1].step,
+      localAnnotationList.value[index].step
+    ] = [
+      localAnnotationList.value[index].step,
+      localAnnotationList.value[index + 1].step
+    ];
+    [
+      localAnnotationList.value[index + 1], localAnnotationList.value[index]
+    ] = [
+      localAnnotationList.value[index],
+      localAnnotationList.value[index + 1]
+    ]
+  }
 }
 
 const handleDelete = (index) => {

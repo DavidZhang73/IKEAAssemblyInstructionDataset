@@ -35,4 +35,10 @@ module.exports = () => {
     const file = await fs.readFile(pathname)
     return { message: 'done', result: file }
   })
+
+  ipcMain.handle('save-manual-annotation', async (e, data) => {
+    const { itemId } = data
+    const file = await fs.readFile(pathname)
+    return { message: 'done', result: file }
+  })
 }
