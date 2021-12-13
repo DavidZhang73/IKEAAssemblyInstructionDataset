@@ -21,10 +21,11 @@
       </button>
     </div>
     <hr/>
-    <div class="p-1 flex flex-grow">
+    <div class="flex">
       <div
-          class="min-w-[10rem] p-1 border-r-[1px] border-gray-200 overflow-y-scroll overflow-x-hidden"
-          style="max-height: calc(100vh - 5.5rem)"
+          class="overflow-y-scroll overflow-x-hidden transition-width"
+          :class="[{'w-[10vw] ': categoryExpand}, {'w-0': !categoryExpand}]"
+          style="height: calc(100vh - 5.5rem)"
       >
         <div class="p-1 text-center border-b-[1px] border-gray-200">Category</div>
         <div
@@ -40,8 +41,15 @@
         </div>
       </div>
       <div
-          class="min-w-[10rem] p-1 border-r-[1px] border-gray-200 overflow-y-scroll overflow-x-hidden"
-          style="max-height: calc(100vh - 5.5rem)"
+          class="w-[1vw] flex items-center justify-center border-gray-200 border-r-[1px] cursor-pointer hover:bg-gray-200"
+          @click="categoryExpand = !categoryExpand"
+      >
+        <ChevronLeftIcon v-if="categoryExpand"/>
+        <ChevronRightIcon v-else/>
+      </div>
+      <div
+          class="w-[10vw] border-r-[1px] border-gray-200 overflow-y-scroll overflow-x-hidden"
+          style="height: calc(100vh - 5.5rem)"
       >
         <div class="p-1 text-center border-b-[1px] border-gray-200">Sub Category</div>
         <div
@@ -57,8 +65,8 @@
         </div>
       </div>
       <div
-          class="min-w-[10rem] p-1 border-r-[1px] border-gray-200 overflow-y-scroll overflow-x-hidden"
-          style="max-height: calc(100vh - 5.5rem)"
+          class="w-[10vw] border-r-[1px] border-gray-200 overflow-y-scroll overflow-x-hidden"
+          style="height: calc(100vh - 5.5rem)"
       >
         <div class="p-1 text-center">
           <div class="p-1 text-center border-b-[1px] border-gray-200">Item</div>
@@ -75,7 +83,10 @@
           </div>
         </div>
       </div>
-      <div class="p-1 w-full">
+      <div
+          class="w-[70vw]"
+          style="height: calc(100vh - 5.5rem)"
+      >
         <Item :item="currentItem"></Item>
       </div>
     </div>
@@ -88,6 +99,7 @@
 import { onMounted, ref } from 'vue'
 // noinspection ES6UnusedImports
 import Item from './components/Item.vue'
+import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/vue/solid'
 
 const mongoURL = ref('mongodb://localhost:27017/')
 const mongoDatabaseName = ref('IkeaAssemblyInstruction')
@@ -99,6 +111,7 @@ const currentSubCategoryName = ref()
 const itemList = ref([])
 const currentItemId = ref()
 const currentItem = ref()
+const categoryExpand = ref(true)
 
 const getSubCategoryList = () => {
   subCategoryList.value = categoryList.value.filter(

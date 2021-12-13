@@ -5,7 +5,11 @@ module.exports = {
     './src/renderer/**/*.{vue,js,ts,jsx,tsx}'
   ],
   theme: {
-    extend: {}
+    extend: {
+      transitionProperty: {
+        'width': 'width',
+      }
+    }
   },
   variants: {},
   plugins: []
