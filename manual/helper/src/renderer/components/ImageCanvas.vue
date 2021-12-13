@@ -8,7 +8,7 @@
     >
     <canvas
         class="absolute top-0 h-[55vh]"
-        :style="`cursor.value: ${cursor.value}`"
+        :style="{cursor: cursor}"
         ref="canvasRef"
         @mousemove="handleMousemove"
         @mouseout="handleMouseupAndMouseout"
@@ -142,42 +142,42 @@ const handleMousemove = (event) => {
     const objectAnnotation = localAnnotationList.value[i]
     if (!found && objectAnnotation.nearTopLeftAnchor(mouseX, mouseY)) {
       if (!dragContext) cursor.value = 'nw-resize'
-      objectAnnotation.heightighlight = true
+      objectAnnotation.highlight = true
       found = i
     } else if (!found && objectAnnotation.nearTopAnchor(mouseX, mouseY)) {
       if (!dragContext) cursor.value = 'n-resize'
-      objectAnnotation.heightighlight = true
+      objectAnnotation.highlight = true
       found = i
     } else if (!found && objectAnnotation.nearTopRightAnchor(mouseX, mouseY)) {
       if (!dragContext) cursor.value = 'ne-resize'
-      objectAnnotation.heightighlight = true
+      objectAnnotation.highlight = true
       found = i
     } else if (!found && objectAnnotation.nearLeftAnchor(mouseX, mouseY)) {
       if (!dragContext) cursor.value = 'w-resize'
-      objectAnnotation.heightighlight = true
+      objectAnnotation.highlight = true
       found = i
     } else if (!found && objectAnnotation.nearRightAnchor(mouseX, mouseY)) {
       if (!dragContext) cursor.value = 'e-resize'
-      objectAnnotation.heightighlight = true
+      objectAnnotation.highlight = true
       found = i
     } else if (!found && objectAnnotation.nearBottomLeftAnchor(mouseX, mouseY)) {
       if (!dragContext) cursor.value = 'sw-resize'
-      objectAnnotation.heightighlight = true
+      objectAnnotation.highlight = true
       found = i
     } else if (!found && objectAnnotation.nearBottomAnchor(mouseX, mouseY)) {
       if (!dragContext) cursor.value = 's-resize'
-      objectAnnotation.heightighlight = true
+      objectAnnotation.highlight = true
       found = i
     } else if (!found && objectAnnotation.nearBottomRightAnchor(mouseX, mouseY)) {
       if (!dragContext) cursor.value = 'se-resize'
-      objectAnnotation.heightighlight = true
+      objectAnnotation.highlight = true
       found = i
     } else if (!found && objectAnnotation.nearBoundary(mouseX, mouseY)) {
       if (!dragContext) cursor.value = 'grab'
-      objectAnnotation.heightighlight = true
+      objectAnnotation.highlight = true
       found = i
     } else {
-      objectAnnotation.heightighlight = false
+      objectAnnotation.highlight = false
     }
   }
   if (typeof (found) === 'number') {
@@ -196,7 +196,7 @@ const handleMousedown = (event) => {
   for (let i = 0; i < localAnnotationList.value.length; i++) {
     let objectAnnotation = localAnnotationList.value[i]
     if (objectAnnotation.page === currentPage.value) {
-      if (objectAnnotation.heightighlight) {
+      if (objectAnnotation.highlight) {
         found = true
         let type = 'moving'
         if (objectAnnotation.nearTopLeftAnchor(mouseX, mouseY) ||
@@ -218,7 +218,7 @@ const handleMousedown = (event) => {
           type: type,
           x: objectAnnotation.x,
           y: objectAnnotation.y,
-          width: objectAnnotation.weight,
+          width: objectAnnotation.width,
           height: objectAnnotation.height,
           mousedownX: mouseX,
           mousedownY: mouseY,

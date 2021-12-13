@@ -158,7 +158,7 @@ watch(() => item.value, (newItem) => {
     for (let j in newItem.manualList[i].annotationList) {
       const annotation = newItem.manualList[i].annotationList[j]
       localAnnotationList.value.push(
-          new ObjectAnnotation(annotation.x, annotation.y, annotation.w, annotation.h, annotation.page, j))
+          new ObjectAnnotation(annotation.x, annotation.y, annotation.width, annotation.height, annotation.page, j))
     }
     currentManual.value = 0
     currentPage.value = 0
@@ -186,16 +186,18 @@ const handleLast = () => {
 }
 
 const handleMoveUp = (index) => {
-  const annotationList = item.manualList[currentManual].annotationList
 
 }
 
 const handleMoveDown = (index) => {
-  const annotationList = item.manualList[currentManual].annotationList
+
 }
 
 const handleDelete = (index) => {
-  const annotationList = item.manualList[currentManual].annotationList
+  localAnnotationList.value.splice(index, 1)
+  for (let i in localAnnotationList.value) {
+    localAnnotationList.value[i].step = i
+  }
 }
 
 const handleSave = () => {
