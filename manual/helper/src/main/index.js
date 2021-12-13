@@ -35,7 +35,8 @@ function createMainWindow () {
   mainWindow = createWindow('main', {
     show: false,
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js')
+      preload: path.join(__dirname, 'preload.js'),
+      webviewTag:true
     }
   })
   mainWindow.once('close', () => {

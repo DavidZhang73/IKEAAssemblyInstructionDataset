@@ -23,7 +23,7 @@
     <hr/>
     <div class="flex">
       <div
-          class="overflow-y-scroll overflow-x-hidden transition-width"
+          class="overflow-y-auto overflow-x-hidden transition-width"
           :class="[{'w-[10vw]': categoryExpand}, {'w-0': !categoryExpand}]"
           style="height: calc(100vh - 5.5rem)"
       >
@@ -48,7 +48,7 @@
         <ChevronRightIcon v-else/>
       </div>
       <div
-          class="w-[10vw] border-r-[1px] border-gray-200 overflow-y-scroll overflow-x-hidden"
+          class="w-[10vw] border-r-[1px] border-gray-200 overflow-y-auto overflow-x-hidden"
           style="height: calc(100vh - 5.5rem)"
       >
         <div class="p-1 text-center border-b-[1px] border-gray-200">Sub Category</div>
@@ -65,7 +65,7 @@
         </div>
       </div>
       <div
-          class="w-[10vw] border-r-[1px] border-gray-200 overflow-y-scroll overflow-x-hidden"
+          class="w-[10vw] border-r-[1px] border-gray-200 overflow-y-auto overflow-x-hidden"
           style="height: calc(100vh - 5.5rem)"
       >
         <div class="p-1 text-center border-b-[1px] border-gray-200">Item</div>

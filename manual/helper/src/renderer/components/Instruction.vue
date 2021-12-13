@@ -160,6 +160,7 @@ watch(() => item.value, (newItem) => {
 }, { immediate: true })
 
 watch(() => currentManual.value, (newCurrentManual) => {
+  // TODO
   localAnnotationList.value = []
   for (let i in item.value.manualList[newCurrentManual].annotationList) {
     const annotation = item.value.manualList[newCurrentManual].annotationList[i]
