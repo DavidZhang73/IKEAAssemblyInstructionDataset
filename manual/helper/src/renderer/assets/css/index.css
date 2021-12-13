@@ -14,3 +14,12 @@ input {
 button {
   @apply outline-none p-1 border-2 rounded border-gray-200 hover:border-gray-500 text-sm text-center;
 }
+
+table, table tr th, table tr td {
+  @apply border-2 border-gray-300;
+}
+
+table {
+  text-align: center;
+  border-collapse: collapse;
+}
