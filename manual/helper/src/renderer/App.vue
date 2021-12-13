@@ -31,7 +31,7 @@
         <div
             class="p-1 text-sm text-center cursor-pointer"
             :class="[
-              {'bg-indigo-400': currentCategoryName === category.name},
+              {'bg-indigo-400 text-white': currentCategoryName === category.name},
               {'hover:bg-indigo-200': currentCategoryName !== category.name}
             ]"
             v-for="category in categoryList"
@@ -55,7 +55,7 @@
         <div
             class="p-1 text-sm text-center cursor-pointer"
             :class="[
-              {'bg-indigo-400': currentSubCategoryName === subCategory},
+              {'bg-indigo-400 text-white': currentSubCategoryName === subCategory},
               {'hover:bg-indigo-200': currentSubCategoryName !== subCategory}
             ]"
             v-for="subCategory in subCategoryList"
@@ -68,19 +68,17 @@
           class="w-[10vw] border-r-[1px] border-gray-200 overflow-y-scroll overflow-x-hidden"
           style="height: calc(100vh - 5.5rem)"
       >
-        <div class="p-1 text-center">
-          <div class="p-1 text-center border-b-[1px] border-gray-200">Item</div>
-          <div
-              class="p-1 text-sm text-center cursor-pointer"
-              :class="[
-              {'bg-indigo-400': currentItemId === item.id},
+        <div class="p-1 text-center border-b-[1px] border-gray-200">Item</div>
+        <div
+            class="p-1 text-sm text-center cursor-pointer"
+            :class="[
+              {'bg-indigo-400 text-white': currentItemId === item.id},
               {'hover:bg-indigo-200': currentItemId !== item.id}
             ]"
-              v-for="item in itemList"
-              :key="item.id"
-              @click="handleCurrentItemChange(item.id)"
-          >{{ item.name }}-{{ item.id }}
-          </div>
+            v-for="item in itemList"
+            :key="item.id"
+            @click="handleCurrentItemChange(item.id)"
+        >{{ item.name }}-{{ item.id }}
         </div>
       </div>
       <div

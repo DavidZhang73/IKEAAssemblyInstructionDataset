@@ -13,6 +13,7 @@
     "postinstall": "install-app-deps"
   },
   "dependencies": {
+    "@headlessui/vue": "^1.4.2",
     "@heroicons/vue": "^1.0.5",
     "electron-context-menu": "^3.0.0",
     "electron-ipc-proxy": "^2.1.0",
