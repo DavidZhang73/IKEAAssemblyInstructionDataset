@@ -24,7 +24,7 @@
     <div class="flex">
       <div
           class="overflow-y-scroll overflow-x-hidden transition-width"
-          :class="[{'w-[10vw] ': categoryExpand}, {'w-0': !categoryExpand}]"
+          :class="[{'w-[10vw]': categoryExpand}, {'w-0': !categoryExpand}]"
           style="height: calc(100vh - 5.5rem)"
       >
         <div class="p-1 text-center border-b-[1px] border-gray-200">Category</div>
@@ -82,7 +82,7 @@
         </div>
       </div>
       <div
-          class="w-[70vw]"
+          :class="[{'w-[69vw]': categoryExpand}, {'w-[79vw]': !categoryExpand}]"
           style="height: calc(100vh - 5.5rem)"
       >
         <Item :item="currentItem"></Item>
@@ -109,7 +109,7 @@ const currentSubCategoryName = ref()
 const itemList = ref([])
 const currentItemId = ref()
 const currentItem = ref()
-const categoryExpand = ref(true)
+const categoryExpand = ref(false)
 
 const getSubCategoryList = () => {
   subCategoryList.value = categoryList.value.filter(

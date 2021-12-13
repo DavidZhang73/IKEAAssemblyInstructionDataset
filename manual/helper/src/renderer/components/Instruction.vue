@@ -9,16 +9,27 @@
         v-for="(manual, index) in item.manualList"
     >
   </div>
-  <ImageCanvas
-      class="flex-grow"
-      v-if="item.manualList[currentManual]"
-      :manual="item.manualList[currentManual]"
-  ></ImageCanvas>
+  <div class="flex items-center justify-center gap-x-4 pt-6">
+    <button
+        @click="handlePrev"
+    ><ChevronLeftIcon class="w-6"/>
+    </button>
+    <ImageCanvas
+        v-if="item.manualList[currentManual].pageList[currentPage].localUrl"
+        :imgLocalUrl="item.manualList[currentManual].pageList[currentPage].localUrl"
+    ></ImageCanvas>
+    <button
+        @click="handleNext"
+    ><ChevronRightIcon class="w-6"/>
+    </button>
+  </div>
+  <div class="text-center">{{ currentPage + 1 }} / {{ item.manualList[currentManual].pageList.length }}</div>
 </template>
 
 <script setup>
 import { ref, toRefs, watch } from 'vue'
 import { getFileURL } from '~/utils/index.js'
+import {ChevronLeftIcon, ChevronRightIcon} from '@heroicons/vue/solid'
 import ImageCanvas from '~/components/ImageCanvas.vue'
 
 const props = defineProps({
@@ -26,7 +37,8 @@ const props = defineProps({
 })
 const { item } = toRefs(props)
 
-const currentManual = ref()
+const currentManual = ref(0)
+const currentPage = ref(0)
 
 watch(() => item.value, (newItem) => {
   for (let i = 0; i < newItem.manualList.length; i++) {
@@ -39,6 +51,19 @@ watch(() => item.value, (newItem) => {
       })
     }
     currentManual.value = 0
+    currentPage.value = 0
   }
 }, { immediate: true })
+
+const handlePrev = () => {
+  if (currentPage.value !== 0) {
+    currentPage.value -= 1
+  }
+}
+
+const handleNext = () => {
+  if (currentPage.value !== item.value.manualList[currentManual.value].pageList.length - 1) {
+    currentPage.value += 1
+  }
+}
 </script>

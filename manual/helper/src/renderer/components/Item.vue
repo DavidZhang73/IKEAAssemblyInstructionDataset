@@ -1,24 +1,27 @@
 <template>
-  <div
-      class="p-1 h-full flex flex-col"
+  <TabGroup
       v-if="item"
+      class="p-1 h-full"
+      as="div"
   >
-    <div class="flex">
+    <TabList
+        class="flex"
+        as="div"
+    >
       <img
           v-show="item.mainImageLocalUrl"
           class="w-28"
           :src="item.mainImageLocalUrl"
           alt="main image"
       >
-      <div class="flex flex-col justify-center">
+      <div class="px-1">
         <div class="text-3xl font-extrabold">{{ item.name }} - {{ item.id }}</div>
         <div class="text-sm">{{ item.category }} - {{ item.subCategory }}</div>
         <div class="text-sm">{{ item.typeName }}</div>
-      </div>
-    </div>
-    <TabGroup>
-      <TabList class="py-1">
-        <Tab v-slot="{ selected }" as="template">
+        <Tab
+            v-slot="{ selected }"
+            as="template"
+        >
           <button
               class="rounded-tr-none rounded-br-none"
               :class="[selected ? 'bg-indigo-400 text-white' : 'bg-white text-black']"
@@ -26,7 +29,10 @@
             Instruction
           </button>
         </Tab>
-        <Tab v-slot="{ selected }" as="template">
+        <Tab
+            v-slot="{ selected }"
+            as="template"
+        >
           <button
               class="rounded-none"
               :class="[selected ? 'bg-indigo-400 text-white' : 'bg-white text-black']"
@@ -34,7 +40,10 @@
             Video
           </button>
         </Tab>
-        <Tab v-slot="{ selected }" as="template">
+        <Tab
+            v-slot="{ selected }"
+            as="template"
+        >
           <button
               class="rounded-tl-none rounded-bl-none"
               :class="[selected ? 'bg-indigo-400 text-white' : 'bg-white text-black']"
@@ -42,19 +51,20 @@
             Vidat
           </button>
         </Tab>
-      </TabList>
-      <TabPanels>
-        <TabPanel>
-          <Instruction :item="item"/>
-        </TabPanel>
-        <TabPanel>
-          <Video :item="item"/>
-        </TabPanel>
-        <TabPanel>
-          <Vidat :item="item"/></TabPanel>
-      </TabPanels>
-    </TabGroup>
-  </div>
+      </div>
+    </TabList>
+    <TabPanels>
+      <TabPanel>
+        <Instruction :item="item"/>
+      </TabPanel>
+      <TabPanel>
+        <Video :item="item"/>
+      </TabPanel>
+      <TabPanel>
+        <Vidat :item="item"/>
+      </TabPanel>
+    </TabPanels>
+  </TabGroup>
 </template>
 
 <script setup>
