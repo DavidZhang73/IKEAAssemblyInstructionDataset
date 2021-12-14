@@ -5,7 +5,7 @@ const contextMenu = require('electron-context-menu')
 const path = require('path')
 
 try {
-  require('electron-reloader')(module)
+  require('electron-reloader')(module, { watchRenderer: false })
 } catch { }
 
 contextMenu({
@@ -36,7 +36,7 @@ function createMainWindow () {
     show: false,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
-      webviewTag:true
+      webviewTag: true
     }
   })
   mainWindow.once('close', () => {
