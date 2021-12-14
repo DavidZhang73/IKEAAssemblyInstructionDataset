@@ -133,8 +133,8 @@ const handleLast = () => {
 }
 
 const handleMoveUp = (index) => {
-  const localAnnotationList = toRaw(store.getters.currentAnnotationList)
   if (index - 1 >= 0) {
+    const localAnnotationList = toRaw(store.getters.currentAnnotationList);
     [
       localAnnotationList[index - 1].step,
       localAnnotationList[index].step
@@ -148,8 +148,8 @@ const handleMoveUp = (index) => {
       localAnnotationList[index],
       localAnnotationList[index - 1]
     ]
+    store.dispatch('saveCurrentAnnotationList', [...localAnnotationList])
   }
-  store.dispatch('saveCurrentAnnotationList', localAnnotationList)
 }
 
 const handleMoveDown = (index) => {
@@ -168,16 +168,16 @@ const handleMoveDown = (index) => {
       localAnnotationList[index],
       localAnnotationList[index + 1]
     ]
+    store.dispatch('saveCurrentAnnotationList', [...localAnnotationList])
   }
-  store.dispatch('saveCurrentAnnotationList', localAnnotationList)
 }
 
 const handleDelete = (index) => {
   const localAnnotationList = toRaw(store.getters.currentAnnotationList)
   localAnnotationList.splice(index, 1)
   for (let i in localAnnotationList) {
-    localAnnotationList[i].step = i
+    localAnnotationList[i].step = parseInt(i)
   }
-  store.dispatch('saveCurrentAnnotationList', localAnnotationList)
+  store.dispatch('saveCurrentAnnotationList', [...localAnnotationList])
 }
 </script>

@@ -24,7 +24,7 @@
       <webview
           ref="webviewRef"
           class="h-[60vh]"
-          :src="`https://www.youtube.com/results?search_query=IKEA ${$store.getters.currentItem.name} ${$store.getters.currentItem.subCategory} assembly`"
+          :src="`https://www.youtube.com/results?search_query=IKEA ${$store.getters.currentItem.name} ${$store.getters.currentItem.subCategory} assembly ${$store.getters.currentItem.typeName} ${$store.getters.currentItem.id}`"
       ></webview>
     </div>
     <div class="w-[30%] h-[75vh] overflow-y-auto">

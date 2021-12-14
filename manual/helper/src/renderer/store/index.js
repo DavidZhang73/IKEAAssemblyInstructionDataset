@@ -95,7 +95,8 @@ const store = createStore({
             annotation.width,
             annotation.height,
             annotation.page,
-            annotation.step
+            annotation.step,
+            annotation.color
           )
         }
         for (let j = 0; j < item.manualList[i].pageList.length; j++) {
@@ -114,7 +115,7 @@ const store = createStore({
     },
     saveCurrentVideoList (context, videoList) {
       context.commit('setCurrentVideoList', videoList)
-      saveCurrentVideoListDebounce()
+      saveCurrentVideoListDebounce(context, videoList)
     }
   }
 })
