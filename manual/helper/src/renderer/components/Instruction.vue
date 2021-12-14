@@ -31,7 +31,7 @@
             :currentPage="currentPage"
             :imgLocalUrl="item.manualList[currentManual].pageList[currentPage].localUrl"
             :annotationList="localAnnotationList"
-            @localAnnotationListUpdate="handleAnnotationListUpdate"
+            @annotationListUpdate="handleAnnotationListUpdate"
         ></ImageCanvas>
         <div>
           <button
@@ -68,7 +68,7 @@
         </thead>
         <tbody>
         <tr v-for="(annotation, index) in localAnnotationList">
-          <td :style="{'background-color': annotation.color}">{{ annotation.step }}</td>
+          <td :style="{'background-color': annotation.color}">{{ annotation.step + 1 }}</td>
           <td>{{ annotation.page + 1 }}</td>
           <td>{{ utils.toFixed2(annotation.x) }}</td>
           <td>{{ utils.toFixed2(annotation.y) }}</td>

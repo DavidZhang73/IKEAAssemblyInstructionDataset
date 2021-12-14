@@ -60,7 +60,7 @@
 </template>
 
 <script setup>
-import { ref, toRefs } from 'vue'
+import { ref, toRefs, watch } from 'vue'
 import { ArrowLeftIcon, ArrowRightIcon, RefreshIcon, TrashIcon } from '@heroicons/vue/solid'
 
 const props = defineProps({
@@ -70,6 +70,10 @@ const webviewRef = ref()
 const { item } = toRefs(props)
 const urlList = ref([])
 const search = ref(`IKEA ${item.value.name} assembly`)
+watch(() => item.value, newItem => {
+  search.value = `IKEA ${newItem.name} assembly`
+  urlList.value = []
+})
 const handleAdd = () => {
   const webviewElement = webviewRef.value
   urlList.value.push(webviewElement.getURL())

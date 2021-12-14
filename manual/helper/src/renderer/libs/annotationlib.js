@@ -4,7 +4,7 @@
 
 import utils from './utils.js'
 
-const Proximity = 40
+const Proximity = 20
 
 class ObjectAnnotation {
 
