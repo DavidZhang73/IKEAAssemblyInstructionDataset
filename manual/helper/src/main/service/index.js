@@ -24,9 +24,9 @@ module.exports = () => {
 
   ipcMain.handle('get-item', async (e, data) => {
     const { itemId } = data
-    const result = await database.collection('item').find(
+    const result = await database.collection('item').findOne(
       { id: itemId }
-    ).toArray()
+    )
     return { message: 'done', result: result }
   })
 
@@ -36,13 +36,26 @@ module.exports = () => {
     return { message: 'done', result: file }
   })
 
-  ipcMain.handle('save-manual-annotation', async (e, data) => {
+  ipcMain.handle('save-manual-annotation-list', async (e, data) => {
     const { itemId, manualIndex, annotationList } = data
     const item = await database.collection('item').findOne(
       { id: itemId }
     )
     item.manualList[manualIndex].annotationList = annotationList
-    await database.collection('item').updateOne({ _id: item._id }, { '$set': item })
-    return { message: 'done', result: 'done' }
+    await database.collection('item').
+      updateOne({ _id: item._id }, { '$set': item })
+    return { message: 'done', result: item }
+  })
+
+  ipcMain.handle('save-video-list', async (e, data) => {
+    const { itemId, manualIndex, videoList } = data
+    const item = await database.collection('item').findOne(
+      { id: itemId }
+    )
+    item.manualList[manualIndex].videoList = videoList
+    await database.collection('item').updateOne(
+      { _id: item._id }, { '$set': item }
+    )
+    return { message: 'done', result: item }
   })
 }

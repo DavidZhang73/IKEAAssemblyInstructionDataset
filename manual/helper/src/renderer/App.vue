@@ -85,7 +85,7 @@
           :class="[{'w-[69vw]': categoryExpand}, {'w-[79vw]': !categoryExpand}]"
           style="height: calc(100vh - 5.5rem)"
       >
-        <Item :item="currentItem"></Item>
+        <Item/>
       </div>
     </div>
     <hr/>
@@ -98,6 +98,9 @@ import { onMounted, ref } from 'vue'
 // noinspection ES6UnusedImports
 import Item from './components/Item.vue'
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/vue/solid'
+import { useStore } from 'vuex'
+
+const store = useStore()
 
 const mongoURL = ref('mongodb://localhost:27017/')
 const mongoDatabaseName = ref('IkeaAssemblyInstruction')
@@ -108,7 +111,6 @@ const subCategoryList = ref([])
 const currentSubCategoryName = ref()
 const itemList = ref([])
 const currentItemId = ref()
-const currentItem = ref()
 const categoryExpand = ref(false)
 
 const getSubCategoryList = () => {
@@ -156,11 +158,7 @@ const handleCurrentSubCategoryChange = (name) => {
 
 const handleCurrentItemChange = (id) => {
   currentItemId.value = id
-  window.api.invoke('get-item', {
-    itemId: currentItemId.value
-  }).then(res => {
-    currentItem.value = res.result[0]
-  })
+  store.dispatch('getItem', id)
 }
 
 onMounted(() => {

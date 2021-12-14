@@ -1,14 +1,4 @@
 <template>
-  <div class="flex items-start">
-    <img
-        class="h-32 p-1 hover:bg-indigo-200 hover:cursor-pointer"
-        :class="[{'bg-indigo-500': currentManual === index}]"
-        :src="manual.pageList[0].localUrl"
-        alt="manual first"
-        @click="currentManual = index"
-        v-for="(manual, index) in item.manualList"
-    >
-  </div>
   <div class="flex py-1">
     <div class="flex-1">
       <div class="flex items-center justify-center gap-x-4 py-4">
@@ -26,13 +16,7 @@
             <ChevronLeftIcon class="w-6"/>
           </button>
         </div>
-        <ImageCanvas
-            v-if="item.manualList[currentManual].pageList[currentPage].localUrl"
-            :currentPage="currentPage"
-            :imgLocalUrl="item.manualList[currentManual].pageList[currentPage].localUrl"
-            :annotationList="localAnnotationList"
-            @annotationListUpdate="handleAnnotationListUpdate"
-        ></ImageCanvas>
+        <ImageCanvas v-if="$store.getters.currentPage.localUrl"/>
         <div>
           <button
               class="rounded-tr-none rounded-br-none"
@@ -48,7 +32,9 @@
           </button>
         </div>
       </div>
-      <div class="text-center">{{ currentPage + 1 }} / {{ item.manualList[currentManual].pageList.length }}</div>
+      <div class="text-center">{{ $store.getters.currentPageIndex + 1 }} /
+        {{ $store.getters.currentManual.pageList.length }}
+      </div>
     </div>
     <div class="flex-1 py-4">
       <table class="w-full">
@@ -67,7 +53,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr v-for="(annotation, index) in localAnnotationList">
+        <tr v-for="(annotation, index) in $store.getters.currentAnnotationList">
           <td :style="{'background-color': annotation.color}">{{ annotation.step + 1 }}</td>
           <td>{{ annotation.page + 1 }}</td>
           <td>{{ utils.toFixed2(annotation.x) }}</td>
@@ -77,7 +63,7 @@
           <td>
             <button
                 class="rounded-tr-none rounded-br-none"
-                @click="currentPage = annotation.page"
+                @click="$store.commit('setCurrentPageIndex', annotation.page)"
             >
               <ZoomInIcon class="w-6"/>
             </button>
@@ -105,14 +91,9 @@
       </table>
     </div>
   </div>
-  <div class="flex justify-center">
-    <button @click="handleSave">save</button>
-  </div>
 </template>
 
 <script setup>
-import { ref, toRefs, watch } from 'vue'
-import { getFileURL } from '~/utils/index.js'
 import {
   ArrowDownIcon,
   ArrowUpIcon,
@@ -123,145 +104,80 @@ import {
   TrashIcon,
   ZoomInIcon
 } from '@heroicons/vue/solid'
-import ImageCanvas from '~/components/ImageCanvas.vue'
 import utils from '~/libs/utils.js'
-import { ObjectAnnotation } from '~/libs/annotationlib.js'
+import { useStore } from 'vuex'
 
-const props = defineProps({
-  item: Object
-})
-const { item } = toRefs(props)
+import ImageCanvas from '~/components/ImageCanvas.vue'
+import { toRaw } from 'vue'
 
-const currentManual = ref(0)
-const currentPage = ref(0)
-
-watch(() => currentManual.value, () => {
-  currentPage.value = 0
-})
-
-const localAnnotationList = ref([])
-const handleAnnotationListUpdate = annotationList => {
-  localAnnotationList.value = annotationList
-}
-
-const updateAnnotationList = (newCurrentManual) => {
-  localAnnotationList.value = []
-  for (let i in item.value.manualList[newCurrentManual].annotationList) {
-    const annotation = item.value.manualList[newCurrentManual].annotationList[i]
-    localAnnotationList.value.push(
-        new ObjectAnnotation(
-            annotation.x,
-            annotation.y,
-            annotation.width,
-            annotation.height,
-            annotation.page,
-            annotation.step
-        )
-    )
-  }
-}
-
-watch(() => item.value, (newItem) => {
-  for (let i = 0; i < newItem.manualList.length; i++) {
-    getFileURL(newItem.manualList[i].pathname).then(url => {
-      newItem.manualList[i].localUrl = url
-    })
-    for (let j = 0; j < newItem.manualList[i].pageList.length; j++) {
-      getFileURL(newItem.manualList[i].pageList[j].pathname).then(url => {
-        newItem.manualList[i].pageList[j].localUrl = url
-      })
-    }
-    currentManual.value = 0
-    currentPage.value = 0
-  }
-  updateAnnotationList(0)
-}, { immediate: true })
-
-watch(() => currentManual.value, (newCurrentManual) => {
-  updateAnnotationList(newCurrentManual)
-})
+const store = useStore()
 
 const handlePrev = () => {
-  if (currentPage.value !== 0) {
-    currentPage.value -= 1
+  if (store.getters.currentPageIndex !== 0) {
+    store.commit('setCurrentPageIndex', store.getters.currentPageIndex - 1)
   }
 }
 
 const handleNext = () => {
-  if (currentPage.value !== item.value.manualList[currentManual.value].pageList.length - 1) {
-    currentPage.value += 1
+  if (store.getters.currentPageIndex !== store.getters.currentManual.pageList.length - 1) {
+    store.commit('setCurrentPageIndex', store.getters.currentPageIndex + 1)
   }
 }
 
 const handleFirst = () => {
-  currentPage.value = 0
+  store.commit('setCurrentPageIndex', 0)
 }
 
 const handleLast = () => {
-  currentPage.value = item.value.manualList[currentManual.value].pageList.length - 1
+  store.commit('setCurrentPageIndex', store.getters.currentManual.pageList.length - 1)
 }
 
 const handleMoveUp = (index) => {
+  const localAnnotationList = toRaw(store.getters.currentAnnotationList)
   if (index - 1 >= 0) {
     [
-      localAnnotationList.value[index - 1].step,
-      localAnnotationList.value[index].step
+      localAnnotationList[index - 1].step,
+      localAnnotationList[index].step
     ] = [
-      localAnnotationList.value[index].step,
-      localAnnotationList.value[index - 1].step
+      localAnnotationList[index].step,
+      localAnnotationList[index - 1].step
     ];
     [
-      localAnnotationList.value[index - 1], localAnnotationList.value[index]
+      localAnnotationList[index - 1], localAnnotationList[index]
     ] = [
-      localAnnotationList.value[index],
-      localAnnotationList.value[index - 1]
+      localAnnotationList[index],
+      localAnnotationList[index - 1]
     ]
   }
+  store.dispatch('saveCurrentAnnotationList', localAnnotationList)
 }
 
 const handleMoveDown = (index) => {
-  if (index + 1 < localAnnotationList.value.length) {
+  const localAnnotationList = toRaw(store.getters.currentAnnotationList)
+  if (index + 1 < localAnnotationList.length) {
     [
-      localAnnotationList.value[index + 1].step,
-      localAnnotationList.value[index].step
+      localAnnotationList[index + 1].step,
+      localAnnotationList[index].step
     ] = [
-      localAnnotationList.value[index].step,
-      localAnnotationList.value[index + 1].step
+      localAnnotationList[index].step,
+      localAnnotationList[index + 1].step
     ];
     [
-      localAnnotationList.value[index + 1], localAnnotationList.value[index]
+      localAnnotationList[index + 1], localAnnotationList[index]
     ] = [
-      localAnnotationList.value[index],
-      localAnnotationList.value[index + 1]
+      localAnnotationList[index],
+      localAnnotationList[index + 1]
     ]
   }
+  store.dispatch('saveCurrentAnnotationList', localAnnotationList)
 }
 
 const handleDelete = (index) => {
-  localAnnotationList.value.splice(index, 1)
-  for (let i in localAnnotationList.value) {
-    localAnnotationList.value[i].step = i
+  const localAnnotationList = toRaw(store.getters.currentAnnotationList)
+  localAnnotationList.splice(index, 1)
+  for (let i in localAnnotationList) {
+    localAnnotationList[i].step = i
   }
-}
-
-const handleSave = () => {
-  const annotationList = []
-  for (let annotation of localAnnotationList.value) {
-    annotationList.push({
-      page: annotation.page,
-      step: annotation.step,
-      x: annotation.x,
-      y: annotation.y,
-      width: annotation.width,
-      height: annotation.height
-    })
-  }
-  window.api.invoke('save-manual-annotation', {
-    itemId: item.value.id,
-    manualIndex: currentManual.value,
-    annotationList
-  }).then(res => {
-    alert(res.result)
-  })
+  store.dispatch('saveCurrentAnnotationList', localAnnotationList)
 }
 </script>

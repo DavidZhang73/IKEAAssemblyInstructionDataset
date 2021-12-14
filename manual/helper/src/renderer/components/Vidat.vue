@@ -1,4 +1,14 @@
 <template>
+  <div class="flex items-start">
+    <img
+        class="h-32 p-1 hover:bg-indigo-200 hover:cursor-pointer"
+        :class="[{'bg-indigo-500': currentManual === index}]"
+        :src="manual.pageList[0].localUrl"
+        alt="manual first"
+        @click="currentManual = index"
+        v-for="(manual, index) in item.manualList"
+    >
+  </div>
   <div class="flex">
     <iframe
         class="w-1/2 h-[40vh]"
@@ -68,10 +78,11 @@
 </template>
 
 <script setup>
-import { toRefs } from 'vue'
+import { ref, toRefs } from 'vue'
 
 const props = defineProps({
   item: Object
 })
 const { item } = toRefs(props)
+const currentManual = ref(0)
 </script>

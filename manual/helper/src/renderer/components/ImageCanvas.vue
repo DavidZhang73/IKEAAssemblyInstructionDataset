@@ -1,13 +1,13 @@
 <template>
   <div class="relative border-2 border-gray-400">
     <img
-        class="h-[55vh]"
-        :src="imgLocalUrl"
+        class="h-[65vh]"
+        :src="$store.getters.currentPage.localUrl"
         alt="page"
         @load="handleImgLoad"
     >
     <canvas
-        class="absolute top-0 h-[55vh]"
+        class="absolute top-0 h-[65vh]"
         :style="{cursor: cursor}"
         ref="canvasRef"
         @mousemove="handleMousemove"
@@ -20,16 +20,12 @@
 </template>
 
 <script setup>
-import { ref, toRefs, watch } from 'vue'
+import { ref, toRaw, watch } from 'vue'
 import { ObjectAnnotation } from '~/libs/annotationlib.js'
+import { useStore } from 'vuex'
 
-const emits = defineEmits(['annotationListUpdate'])
-const props = defineProps({
-  imgLocalUrl: String,
-  currentPage: Number,
-  annotationList: Object
-})
-const { imgLocalUrl, currentPage, annotationList } = toRefs(props)
+const store = useStore()
+
 const canvasRef = ref()
 
 let imageHeight
@@ -38,8 +34,8 @@ let imageWidth
 const draw = () => {
   const ctx = canvasRef.value.getContext('2d')
   ctx.clearRect(0, 0, imageWidth, imageHeight)
-  for (let annotation of annotationList.value) {
-    if (annotation.page === currentPage.value) {
+  for (let annotation of store.getters.currentAnnotationList) {
+    if (annotation.page === store.getters.currentPageIndex) {
       annotation.draw(ctx)
     }
   }
@@ -53,15 +49,11 @@ const handleImgLoad = (e) => {
   canvasElement.height = height
   canvasElement.width = width
   draw()
-  emits('annotationListUpdate', annotationList.value)
 }
 
-watch(() => annotationList.value, (newAnnotationList) => {
+watch(() => store.getters.currentAnnotationList, () => {
   draw()
-  emits('annotationListUpdate', newAnnotationList)
 }, { deep: true })
-
-watch(() => currentPage.value, () => draw())
 
 let createContext
 let activeContext
@@ -78,7 +70,7 @@ const handleMousemove = (event) => {
   const [mouseX, mouseY] = getMouseLocation(event)
   // creating an object
   if (createContext) {
-    const activeAnnotation = annotationList.value[createContext.index]
+    const activeAnnotation = store.getters.currentAnnotationList[createContext.index]
     const deltaX = mouseX - createContext.mousedownX
     const deltaY = mouseY - createContext.mousedownY
     activeAnnotation.resize(
@@ -90,7 +82,7 @@ const handleMousemove = (event) => {
   }
   // drag the object
   if (dragContext) {
-    const activeAnnotation = annotationList.value[dragContext.index]
+    const activeAnnotation = store.getters.currentAnnotationList[dragContext.index]
     const deltaX = mouseX - dragContext.mousedownX
     const deltaY = mouseY - dragContext.mousedownY
     if (dragContext.type === 'moving') {
@@ -136,9 +128,9 @@ const handleMousemove = (event) => {
   }
   // highlight the object
   let found = null
-  for (let i = 0; i < annotationList.value.length; i++) {
-    const objectAnnotation = annotationList.value[i]
-    if(objectAnnotation.page === currentPage.value) {
+  for (let i = 0; i < store.getters.currentAnnotationList.length; i++) {
+    const objectAnnotation = store.getters.currentAnnotationList[i]
+    if (objectAnnotation.page === store.getters.currentPageIndex) {
       if (!found && objectAnnotation.nearTopLeftAnchor(mouseX, mouseY)) {
         if (!dragContext) cursor.value = 'nw-resize'
         objectAnnotation.highlight = true
@@ -184,6 +176,7 @@ const handleMousemove = (event) => {
     activeContext = {
       index: found
     }
+    store.dispatch('saveCurrentAnnotationList', toRaw(store.getters.currentAnnotationList))
   } else {
     activeContext = null
     cursor.value = 'crosshair'
@@ -193,9 +186,9 @@ const handleMousedown = (event) => {
   const [mouseX, mouseY] = getMouseLocation(event)
   // drag
   let found = false
-  for (let i = 0; i < annotationList.value.length; i++) {
-    let objectAnnotation = annotationList.value[i]
-    if (objectAnnotation.page === currentPage.value) {
+  for (let i = 0; i < store.getters.currentAnnotationList.length; i++) {
+    let objectAnnotation = store.getters.currentAnnotationList[i]
+    if (objectAnnotation.page === store.getters.currentPageIndex) {
       if (objectAnnotation.highlight) {
         found = true
         let type = 'moving'
@@ -232,25 +225,27 @@ const handleMousedown = (event) => {
   if (!found && !createContext) {
     const objectAnnotation = new ObjectAnnotation(
         mouseX, mouseY, 0, 0,
-        currentPage.value,
-        annotationList.value.length
+        store.getters.currentPageIndex,
+        store.getters.currentAnnotationList.length
     )
     createContext = {
-      index: annotationList.value.length,
+      index: store.getters.currentAnnotationList.length,
       x: objectAnnotation.x,
       y: objectAnnotation.y,
       mousedownX: mouseX,
       mousedownY: mouseY
     }
-    emits('annotationListUpdate', [...annotationList.value, objectAnnotation])
+    store.dispatch('saveCurrentAnnotationList', [...toRaw(store.getters.currentAnnotationList), objectAnnotation])
   }
 }
 const handleMouseupAndMouseout = (event) => {
   event.preventDefault()
   if (createContext) {
-    const activeAnnotation = annotationList.value[createContext.index]
+    const activeAnnotation = store.getters.currentAnnotationList[createContext.index]
     if (activeAnnotation.width < 8 || activeAnnotation.height < 8) {
-      emits('annotationListUpdate', annotationList.value.filter((annotation, index) => index !== createContext.index))
+      store.dispatch('saveCurrentAnnotationList',
+          toRaw(store.getters.currentAnnotationList).filter((annotation, index) => index !== createContext.index)
+      )
     } else {
       createContext = null
     }

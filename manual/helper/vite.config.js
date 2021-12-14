@@ -7,7 +7,7 @@ const srcPath = path.resolve(__dirname, 'src', 'renderer')
 module.exports = {
   server: {
     open: false, // do not open the browser as we use electron
-    port: process.env.PORT || 3000,
+    port: process.env.PORT || 3000
   },
   root: './src/renderer',
   build: {
@@ -17,15 +17,23 @@ module.exports = {
     alias: [
       {
         find: '~',
-        replacement: srcPath,
-      },
-    ],
+        replacement: srcPath
+      }
+    ]
   },
-  plugins: [vue()],
+  plugins: [
+    vue({
+      template: {
+        compilerOptions: {
+          isCustomElement: tag => tag === 'webview'
+        }
+      }
+    })
+  ],
   optimizeDeps: {
     // exclude path and electron-window-state as we are using the node runtime inside the browser
     // and don't want vite to complain. If you have any issues importing node packages and vite complains,
     // add them here
-    exclude: ['path', 'electron-window-state'],
-  },
+    exclude: ['path', 'electron-window-state']
+  }
 }

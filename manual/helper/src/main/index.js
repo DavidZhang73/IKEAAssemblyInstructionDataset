@@ -46,6 +46,7 @@ function createMainWindow () {
   const port = process.env.PORT || 3000
   if (isDev) {
     loadVitePage(port)
+    mainWindow.webContents.openDevTools({mode:'detach'})
   } else {
     mainWindow.loadFile('dist/index.html')
   }
