@@ -36,10 +36,13 @@ module.exports = () => {
     return { message: 'done', result: file }
   })
 
-  // TODO
   ipcMain.handle('save-manual-annotation', async (e, data) => {
-    const { itemId } = data
-    const file = await fs.readFile(pathname)
-    return { message: 'done', result: file }
+    const { itemId, manualIndex, annotationList } = data
+    const item = await database.collection('item').findOne(
+      { id: itemId }
+    )
+    item.manualList[manualIndex].annotationList = annotationList
+    await database.collection('item').updateOne({ _id: item._id }, { '$set': item })
+    return { message: 'done', result: 'done' }
   })
 }

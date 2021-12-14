@@ -144,6 +144,23 @@ const handleAnnotationListUpdate = annotationList => {
   localAnnotationList.value = annotationList
 }
 
+const updateAnnotationList = (newCurrentManual) => {
+  localAnnotationList.value = []
+  for (let i in item.value.manualList[newCurrentManual].annotationList) {
+    const annotation = item.value.manualList[newCurrentManual].annotationList[i]
+    localAnnotationList.value.push(
+        new ObjectAnnotation(
+            annotation.x,
+            annotation.y,
+            annotation.width,
+            annotation.height,
+            annotation.page,
+            annotation.step
+        )
+    )
+  }
+}
+
 watch(() => item.value, (newItem) => {
   for (let i = 0; i < newItem.manualList.length; i++) {
     getFileURL(newItem.manualList[i].pathname).then(url => {
@@ -157,17 +174,12 @@ watch(() => item.value, (newItem) => {
     currentManual.value = 0
     currentPage.value = 0
   }
+  updateAnnotationList(0)
 }, { immediate: true })
 
 watch(() => currentManual.value, (newCurrentManual) => {
-  // TODO
-  localAnnotationList.value = []
-  for (let i in item.value.manualList[newCurrentManual].annotationList) {
-    const annotation = item.value.manualList[newCurrentManual].annotationList[i]
-    localAnnotationList.value.push(
-        new ObjectAnnotation(annotation.x, annotation.y, annotation.width, annotation.height, annotation.page, j))
-  }
-}, { immediate: true })
+  updateAnnotationList(newCurrentManual)
+})
 
 const handlePrev = () => {
   if (currentPage.value !== 0) {
@@ -233,6 +245,23 @@ const handleDelete = (index) => {
 }
 
 const handleSave = () => {
-// TODO
+  const annotationList = []
+  for (let annotation of localAnnotationList.value) {
+    annotationList.push({
+      page: annotation.page,
+      step: annotation.step,
+      x: annotation.x,
+      y: annotation.y,
+      width: annotation.width,
+      height: annotation.height
+    })
+  }
+  window.api.invoke('save-manual-annotation', {
+    itemId: item.value.id,
+    manualIndex: currentManual.value,
+    annotationList
+  }).then(res => {
+    alert(res.result)
+  })
 }
 </script>

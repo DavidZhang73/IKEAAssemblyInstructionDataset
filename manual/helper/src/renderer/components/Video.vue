@@ -1,7 +1,17 @@
 <template>
+  <div class="flex items-start">
+    <img
+        class="h-32 p-1 hover:bg-indigo-200 hover:cursor-pointer"
+        :class="[{'bg-indigo-500': currentManual === index}]"
+        :src="manual.pageList[0].localUrl"
+        alt="manual first"
+        @click="currentManual = index"
+        v-for="(manual, index) in item.manualList"
+    >
+  </div>
   <div class="flex justify-center">
     <div class="w-[70%]">
-      <div class="p-4 flex items-center justify-center">
+      <div class="p-1 flex items-center justify-center">
         <button
             class="rounded-tr-none rounded-br-none"
             @click="webviewRef.goBack()"
@@ -23,12 +33,12 @@
       </div>
       <webview
           ref="webviewRef"
-          class="h-[70vh]"
+          class="h-[60vh]"
           :src="`https://www.youtube.com/results?search_query=${search}`"
       ></webview>
     </div>
     <div class="w-[30%] h-[75vh] overflow-y-auto">
-      <div class="p-4 flex justify-center">
+      <div class="p-1 flex justify-center">
         <button
             class="rounded-tr-none rounded-br-none"
             @click="handleAdd"
@@ -68,11 +78,13 @@ const props = defineProps({
 })
 const webviewRef = ref()
 const { item } = toRefs(props)
+const currentManual = ref(0)
 const urlList = ref([])
-const search = ref(`IKEA ${item.value.name} assembly`)
+const search = ref(`IKEA ${item.value.name} ${item.value.subCategory} assembly`)
 watch(() => item.value, newItem => {
-  search.value = `IKEA ${newItem.name} assembly`
+  search.value = `IKEA ${newItem.name} ${newItem.subCategory} assembly`
   urlList.value = []
+  currentManual.value = 0
 })
 const handleAdd = () => {
   const webviewElement = webviewRef.value
