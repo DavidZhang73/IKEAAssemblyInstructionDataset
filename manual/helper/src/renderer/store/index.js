@@ -33,7 +33,8 @@ const store = createStore({
     return {
       currentItem: {},
       currentManualIndex: 0,
-      currentPageIndex: 0
+      currentPageIndex: 0,
+      currentVideoIndex: 0
     }
   },
   getters: {
@@ -62,6 +63,20 @@ const store = createStore({
     currentVideoList (state) {
       return state.currentItem.manualList[state.currentManualIndex].videoList ||
         []
+    },
+    currentVideoIndex (state) {
+      return state.currentVideoIndex
+    },
+    currentVideo (state) {
+      if (state.currentItem.manualList[state.currentManualIndex].videoList) {
+        return state.currentItem.manualList[state.currentManualIndex].videoList[state.currentVideoIndex]
+      } else {
+        return null
+      }
+    },
+    currentVideoAnnotationList (state) {
+      return state.currentItem.manualList[state.currentManualIndex].videoList[state.currentVideoIndex].annotationList ||
+        []
     }
   },
   mutations: {
@@ -80,6 +95,12 @@ const store = createStore({
     },
     setCurrentVideoList (state, videoList) {
       state.currentItem.manualList[state.currentManualIndex].videoList = videoList
+    },
+    setCurrentVideoIndex (state, currentVideoIndex) {
+      state.currentVideoIndex = currentVideoIndex
+    },
+    setCurrentVideoAnnotationList (state, annotationList) {
+      state.currentItem.manualList[state.currentManualIndex].videoList[state.currentVideoIndex].annotationList = annotationList
     }
   },
   actions: {
@@ -108,6 +129,7 @@ const store = createStore({
       context.commit('setCurrentItem', item)
       context.commit('setCurrentManualIndex', 0)
       context.commit('setCurrentPageIndex', 0)
+      context.commit('setCurrentVideoIndex', 0)
     },
     saveCurrentAnnotationList (context, annotationList) {
       context.commit('setCurrentAnnotationList', annotationList)

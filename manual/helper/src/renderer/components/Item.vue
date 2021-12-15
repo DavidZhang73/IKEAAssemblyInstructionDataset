@@ -79,7 +79,7 @@
         <Video/>
       </TabPanel>
       <TabPanel>
-<!--        <Vidat/>-->
+        <Vidat/>
       </TabPanel>
     </TabPanels>
   </TabGroup>

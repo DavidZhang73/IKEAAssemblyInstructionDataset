@@ -36,7 +36,7 @@
         {{ $store.getters.currentManual.pageList.length }}
       </div>
     </div>
-    <div class="flex-1 py-4">
+    <div class="flex-1 py-4 h-[70vh] overflow-y-auto">
       <table class="w-full">
         <thead>
         <tr>
