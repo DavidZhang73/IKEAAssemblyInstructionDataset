@@ -22,14 +22,31 @@ def get_image(item, output_path):
     database.get_collection('item').update_one({'_id': item['_id']}, {'$set': item})
 
 
+def split_manual_to_page_list(pathname, output_path):
+    os.makedirs(output_path, exist_ok=True)
+    cmd = f'pdftoppm -q -png {pathname} {os.path.join(output_path, "page")}'
+    os.system(cmd)
+    return [
+        {
+            "pathname": os.path.abspath(os.path.join(output_path, file))
+        }
+        for file in os.listdir(output_path)
+    ]
+
+
 def get_manual(item, output_path):
     for i, manual in enumerate(item['manualList']):
         url = manual['url']
         if url:
-            item['manualList'][i]['pathname'] = download_binary(
+            pathname = download_binary(
                 url,
                 os.path.join(output_path, 'manual'),
                 _get_output_name(url)
+            )
+            item['manualList'][i]['pathname'] = pathname
+            item['manualList'][i]['pageList'] = split_manual_to_page_list(
+                pathname,
+                os.path.join(output_path, 'manual', str(i + 1))
             )
 
     database.get_collection('item').update_one({'_id': item['_id']}, {'$set': item})
@@ -42,4 +59,4 @@ def get_item(item):
 
 
 if __name__ == '__main__':
-    thread_map(get_item, list(database.get_collection('item').find()))
+    thread_map(get_item, list(database.get_collection('item').find()), max_workers=4)
