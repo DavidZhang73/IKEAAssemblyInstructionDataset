@@ -21,11 +21,13 @@
       </button>
     </div>
     <hr/>
-    <div class="flex">
+    <div
+        class="flex"
+        style="height: calc(100vh - 3.5rem)"
+    >
       <div
           class="overflow-y-auto overflow-x-hidden transition-width"
           :class="[{'w-[10vw]': categoryExpand}, {'w-0': !categoryExpand}]"
-          style="height: calc(100vh - 5.5rem)"
       >
         <div class="p-1 text-center border-b-[1px] border-gray-200">Category</div>
         <div
@@ -49,7 +51,6 @@
       </div>
       <div
           class="w-[10vw] border-r-[1px] border-gray-200 overflow-y-auto overflow-x-hidden"
-          style="height: calc(100vh - 5.5rem)"
       >
         <div class="p-1 text-center border-b-[1px] border-gray-200">Sub Category</div>
         <div
@@ -66,7 +67,6 @@
       </div>
       <div
           class="w-[10vw] border-r-[1px] border-gray-200 overflow-y-auto overflow-x-hidden"
-          style="height: calc(100vh - 5.5rem)"
       >
         <div class="p-1 text-center border-b-[1px] border-gray-200">Item</div>
         <div
@@ -81,10 +81,7 @@
         >{{ item.name }}-{{ item.id }}
         </div>
       </div>
-      <div
-          :class="[{'w-[69vw]': categoryExpand}, {'w-[79vw]': !categoryExpand}]"
-          style="height: calc(100vh - 5.5rem)"
-      >
+      <div class="flex-grow">
         <Item/>
       </div>
     </div>

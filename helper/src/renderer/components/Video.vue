@@ -1,6 +1,6 @@
 <template>
-  <div class="flex justify-center">
-    <div class="w-[70%]">
+  <div class="h-full flex justify-center">
+    <div class="w-[70%] flex flex-col">
       <div class="p-1 flex items-center justify-center">
         <button
             class="rounded-tr-none rounded-br-none"
@@ -15,6 +15,12 @@
           <ArrowRightIcon class="w-6"/>
         </button>
         <button
+            class="rounded-none"
+            @click="webviewRef.loadURL(search)"
+        >
+          <HomeIcon class="w-6"/>
+        </button>
+        <button
             class="rounded-tl-none rounded-bl-none"
             @click="webviewRef.reload()"
         >
@@ -23,30 +29,45 @@
       </div>
       <webview
           ref="webviewRef"
-          class="h-[60vh]"
-          :src="`https://www.youtube.com/results?search_query=IKEA ${$store.getters.currentItem.name} ${$store.getters.currentItem.subCategory} assembly ${$store.getters.currentItem.typeName} ${$store.getters.currentItem.id}`"
+          class="flex-grow"
+          :src="search"
       ></webview>
     </div>
-    <div class="w-[30%] h-[75vh] overflow-y-auto">
-      <div class="p-1 flex justify-center">
+    <div class="w-[30%] flex-grow overflow-y-auto">
+      <div class="p-1 flex items-center justify-center">
         <button
+            class="rounded-tr-none rounded-br-none"
             @click="handleAdd"
-        >add
+        >
+          <PlusIcon class="w-6"/>
+        </button>
+        <button
+            class="rounded-tl-none rounded-bl-none"
+            @click="handleDeleteAll"
+        >
+          <TrashIcon class="text-red-500 w-6"/>
         </button>
       </div>
       <div
-          class="relative p-1 border-2 border-gray-400 hover:bg-indigo-200"
+          class="p-1 border-2 border-gray-400 hover:bg-indigo-200"
           v-for="(video, index) in $store.getters.currentVideoList"
       >
-        <span
-            class="cursor-pointer"
-            @click="webviewRef.loadURL(video.url)"
-        >{{ video.url }}</span>
-        <div
-            class="w-10 absolute top-0 bottom-0 right-0 flex items-center justify-center cursor-pointer"
-            @click="handleDelete(index)"
-        >
-          <TrashIcon class="text-red-400 w-6"/>
+        <div class="p-1">
+          ID: {{ video.url.split('watch?v=')[1] }}
+        </div>
+        <div class="text-right">
+          <button
+              class="rounded-tr-none rounded-br-none"
+              @click="webviewRef.loadURL(video.url)"
+          >
+            <ZoomInIcon class="w-6"/>
+          </button>
+          <button
+              class="rounded-tl-none rounded-bl-none"
+              @click="handleDelete(index)"
+          >
+            <TrashIcon class="text-red-500 w-6"/>
+          </button>
         </div>
       </div>
     </div>
@@ -55,16 +76,30 @@
 
 <script setup>
 import { ref, toRaw } from 'vue'
-import { ArrowLeftIcon, ArrowRightIcon, RefreshIcon, TrashIcon } from '@heroicons/vue/solid'
+import {
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  HomeIcon,
+  PlusIcon,
+  RefreshIcon,
+  TrashIcon,
+  ZoomInIcon
+} from '@heroicons/vue/solid'
 import { useStore } from 'vuex'
 
 const store = useStore()
 const webviewRef = ref()
+
+const search = `https://www.youtube.com/results?search_query=IKEA ${store.getters.currentItem.name} ${store.getters.currentItem.subCategory} assembly ${store.getters.currentItem.typeName} ${store.getters.currentItem.id}`
 const handleAdd = () => {
   store.dispatch('saveCurrentVideoList', [...toRaw(store.getters.currentVideoList), { url: webviewRef.value.getURL() }])
 }
 
 const handleDelete = (index) => {
   store.dispatch('saveCurrentVideoList', toRaw(store.getters.currentVideoList).filter((video, i) => i !== index))
+}
+
+const handleDeleteAll = () => {
+  store.dispatch('saveCurrentVideoList', [])
 }
 </script>

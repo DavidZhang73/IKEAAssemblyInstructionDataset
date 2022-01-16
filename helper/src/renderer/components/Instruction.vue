@@ -1,7 +1,7 @@
 <template>
-  <div class="flex py-1">
-    <div class="flex-1">
-      <div class="flex items-center justify-center gap-x-4 py-4">
+  <div class="h-full flex">
+    <div class="flex-1 flex flex-col">
+      <div class="flex-grow flex items-center justify-center gap-x-4 py-4">
         <div>
           <button
               class="rounded-tr-none rounded-br-none"
@@ -36,7 +36,7 @@
         {{ $store.getters.currentManual.pageList.length }}
       </div>
     </div>
-    <div class="flex-1 py-4 h-[70vh] overflow-y-auto">
+    <div class="flex-1 py-4 overflow-y-auto">
       <table class="w-full">
         <thead>
         <tr>
