@@ -14,12 +14,9 @@ module.exports = {
     outDir: path.join(rootPath, 'dist')
   },
   resolve: {
-    alias: [
-      {
-        find: '~',
-        replacement: srcPath
-      }
-    ]
+    alias: {
+      '~': srcPath
+    }
   },
   plugins: [
     vue({

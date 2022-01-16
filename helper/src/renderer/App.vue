@@ -88,8 +88,6 @@
         <Item/>
       </div>
     </div>
-    <hr/>
-    <div class="h-8">Footer</div>
   </div>
 </template>
 

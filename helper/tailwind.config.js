@@ -1,16 +1,20 @@
 module.exports = {
-  mode: 'jit',
-  purge: [
+  content: [
     './src/renderer/index.html',
     './src/renderer/**/*.{vue,js,ts,jsx,tsx}'
   ],
   theme: {
     extend: {
       transitionProperty: {
-        'width': 'width',
+        'width': 'width'
       }
     }
   },
   variants: {},
-  plugins: []
+  plugins: [
+    require('@tailwindcss/forms'),
+    require('@tailwindcss/typography'),
+    require('@tailwindcss/line-clamp'),
+    require('@tailwindcss/aspect-ratio')
+  ]
 }
