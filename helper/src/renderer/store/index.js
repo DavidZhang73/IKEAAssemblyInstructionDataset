@@ -69,8 +69,7 @@ const store = createStore({
       }
     },
     currentVideoList (state) {
-      return state.currentItem.videoList ||
-        []
+      return state.currentItem.videoList || []
     },
     currentVideoIndex (state) {
       return state.currentVideoIndex
