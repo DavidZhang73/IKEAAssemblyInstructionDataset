@@ -33,7 +33,10 @@
           :src="search"
       ></webview>
     </div>
-    <div class="w-[30%] flex-grow overflow-y-auto">
+    <div
+        class="w-[30%] flex-grow overflow-y-auto"
+        style="height: calc(100vh - 132px - 3.5rem)"
+    >
       <div class="p-1 flex items-center justify-center">
         <button
             class="rounded-tr-none rounded-br-none"
@@ -92,7 +95,11 @@ const webviewRef = ref()
 
 const search = `https://www.youtube.com/results?search_query=IKEA ${store.getters.currentItem.name} ${store.getters.currentItem.subCategory} assembly ${store.getters.currentItem.typeName} ${store.getters.currentItem.id}`
 const handleAdd = () => {
-  store.dispatch('saveCurrentVideoList', [...toRaw(store.getters.currentVideoList), { url: webviewRef.value.getURL() }])
+  const url = webviewRef.value.getURL()
+  if (!store.getters.currentVideoList.find(item => item.url === url) && url.split('watch?v=')[1]) {
+    store.dispatch('saveCurrentVideoList',
+        [...toRaw(store.getters.currentVideoList), { 'url': url }])
+  }
 }
 
 const handleDelete = (index) => {
