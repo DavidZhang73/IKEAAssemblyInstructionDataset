@@ -44,6 +44,7 @@
         </tr>
         <tr>
           <th>step</th>
+          <th>manual</th>
           <th>page</th>
           <th>x</th>
           <th>y</th>
@@ -55,6 +56,7 @@
         <tbody>
         <tr v-for="(annotation, index) in $store.getters.currentAnnotationList">
           <td :style="{'background-color': annotation.color}">{{ annotation.step + 1 }}</td>
+          <td>{{ annotation.manual + 1 }}</td>
           <td>{{ annotation.page + 1 }}</td>
           <td>{{ utils.toFixed2(annotation.x) }}</td>
           <td>{{ utils.toFixed2(annotation.y) }}</td>
