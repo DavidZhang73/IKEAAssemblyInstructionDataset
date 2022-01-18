@@ -63,7 +63,7 @@
           <td>
             <button
                 class="rounded-tr-none rounded-br-none"
-                @click="$store.commit('setCurrentPageIndex', annotation.page)"
+                @click="handleLocate(annotation)"
             >
               <ZoomInIcon class="w-6"/>
             </button>
@@ -111,6 +111,12 @@ import ImageCanvas from '~/components/ImageCanvas.vue'
 import { toRaw } from 'vue'
 
 const store = useStore()
+
+const handleLocate = (annotation) =>{
+  console.log(annotation)
+  store.commit('setCurrentManualIndex', annotation.manual)
+  store.commit('setCurrentPageIndex', annotation.page)
+}
 
 const handlePrev = () => {
   if (store.getters.currentPageIndex !== 0) {

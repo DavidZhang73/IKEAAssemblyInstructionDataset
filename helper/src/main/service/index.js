@@ -37,22 +37,22 @@ module.exports = () => {
   })
 
   ipcMain.handle('save-manual-annotation-list', async (e, data) => {
-    const { itemId, manualIndex, annotationList } = data
+    const { itemId, annotationList } = data
     const item = await database.collection('item').findOne(
       { id: itemId }
     )
-    item.manualList[manualIndex].annotationList = annotationList
+    item.annotationList = annotationList
     await database.collection('item').
       updateOne({ _id: item._id }, { '$set': item })
     return { message: 'done', result: item }
   })
 
   ipcMain.handle('save-video-list', async (e, data) => {
-    const { itemId, manualIndex, videoList } = data
+    const { itemId, videoList } = data
     const item = await database.collection('item').findOne(
       { id: itemId }
     )
-    item.manualList[manualIndex].videoList = videoList
+    item.videoList = videoList
     await database.collection('item').updateOne(
       { _id: item._id }, { '$set': item }
     )

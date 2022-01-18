@@ -8,7 +8,6 @@ const saveCurrentAnnotationListDebounce = debounce
   (context, annotationList) => window.api.invoke('save-manual-annotation-list',
     {
       itemId: context.state.currentItem.id,
-      manualIndex: context.state.currentManualIndex,
       annotationList: annotationList
     }).then(res => {
     console.log(res)
@@ -20,7 +19,6 @@ const saveCurrentVideoListDebounce = debounce
 (
   (context, videoList) => window.api.invoke('save-video-list', {
     itemId: context.state.currentItem.id,
-    manualIndex: context.state.currentManualIndex,
     videoList: videoList
   }).then(res => {
     console.log(res)
@@ -57,25 +55,35 @@ const store = createStore({
       return state.currentItem.manualList[state.currentManualIndex].pageList[state.currentPageIndex]
     },
     currentAnnotationList (state) {
-      return state.currentItem.manualList[state.currentManualIndex].annotationList ||
+      return state.currentItem.annotationList ||
         []
     },
+    currentCanvasAnnotationList (state) {
+      if (state.currentItem.annotationList) {
+        return state.currentItem.annotationList.filter(
+          annotation => (annotation.manual === state.currentManualIndex) &&
+            (annotation.page === state.currentPageIndex)
+        )
+      } else {
+        return []
+      }
+    },
     currentVideoList (state) {
-      return state.currentItem.manualList[state.currentManualIndex].videoList ||
+      return state.currentItem.videoList ||
         []
     },
     currentVideoIndex (state) {
       return state.currentVideoIndex
     },
     currentVideo (state) {
-      if (state.currentItem.manualList[state.currentManualIndex].videoList) {
-        return state.currentItem.manualList[state.currentManualIndex].videoList[state.currentVideoIndex]
+      if (state.currentItem.videoList) {
+        return state.currentItem.videoList[state.currentVideoIndex]
       } else {
         return null
       }
     },
     currentVideoAnnotationList (state) {
-      return state.currentItem.manualList[state.currentManualIndex].videoList[state.currentVideoIndex].annotationList ||
+      return state.currentItem.videoList[state.currentVideoIndex].annotationList ||
         []
     }
   },
@@ -91,35 +99,36 @@ const store = createStore({
       state.currentPageIndex = currentPageIndex
     },
     setCurrentAnnotationList (state, annotationList) {
-      state.currentItem.manualList[state.currentManualIndex].annotationList = annotationList
+      state.currentItem.annotationList = annotationList
     },
     setCurrentVideoList (state, videoList) {
-      state.currentItem.manualList[state.currentManualIndex].videoList = videoList
+      state.currentItem.videoList = videoList
     },
     setCurrentVideoIndex (state, currentVideoIndex) {
       state.currentVideoIndex = currentVideoIndex
     },
     setCurrentVideoAnnotationList (state, annotationList) {
-      state.currentItem.manualList[state.currentManualIndex].videoList[state.currentVideoIndex].annotationList = annotationList
+      state.currentItem.videoList[state.currentVideoIndex].annotationList = annotationList
     }
   },
   actions: {
     async getItem (context, itemId) {
       const { result: item } = await window.api.invoke('get-item', { itemId })
       item.mainImageLocalUrl = await getFileURL(item.mainImagePathname)
+      for (let i in item.annotationList) {
+        const annotation = item.annotationList[i]
+        item.annotationList[i] = new ObjectAnnotation(
+          annotation.x,
+          annotation.y,
+          annotation.width,
+          annotation.height,
+          annotation.manual,
+          annotation.page,
+          annotation.step,
+          annotation.color
+        )
+      }
       for (let i = 0; i < item.manualList.length; i++) {
-        for (let j in item.manualList[i].annotationList) {
-          const annotation = item.manualList[i].annotationList[j]
-          item.manualList[i].annotationList[j] = new ObjectAnnotation(
-            annotation.x,
-            annotation.y,
-            annotation.width,
-            annotation.height,
-            annotation.page,
-            annotation.step,
-            annotation.color
-          )
-        }
         for (let j = 0; j < item.manualList[i].pageList.length; j++) {
           item.manualList[i].pageList[j].localUrl = await getFileURL(
             item.manualList[i].pageList[j].pathname

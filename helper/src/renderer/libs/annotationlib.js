@@ -8,8 +8,9 @@ const Proximity = 20
 
 class ObjectAnnotation {
 
-  constructor (x, y, width, height, page = 0, step = 0, color = null) {
+  constructor (x, y, width, height, manual, page = 0, step = 0, color = null) {
     this.highlight = false
+    this.manual = manual
     this.page = page
     this.step = step
     if (!color) {
@@ -99,6 +100,7 @@ class ObjectAnnotation {
       this.y,
       this.width,
       this.height,
+      this.manual,
       this.page,
       this.step,
       this.color
@@ -116,8 +118,7 @@ class ObjectAnnotation {
     if (width < 0) {
       this.x = x + width
       this.width = -width
-    }
-    else {
+    } else {
       this.x = x
       this.width = width
     }
@@ -125,8 +126,7 @@ class ObjectAnnotation {
     if (height < 0) {
       this.y = y + height
       this.height = -height
-    }
-    else {
+    } else {
       this.y = y
       this.height = height
     }

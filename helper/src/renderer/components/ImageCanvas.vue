@@ -34,10 +34,8 @@ let imageWidth
 const draw = () => {
   const ctx = canvasRef.value.getContext('2d')
   ctx.clearRect(0, 0, imageWidth, imageHeight)
-  for (let annotation of store.getters.currentAnnotationList) {
-    if (annotation.page === store.getters.currentPageIndex) {
-      annotation.draw(ctx)
-    }
+  for (let annotation of store.getters.currentCanvasAnnotationList) {
+    annotation.draw(ctx)
   }
 }
 
@@ -51,7 +49,7 @@ const handleImgLoad = (e) => {
   draw()
 }
 
-watch(() => store.getters.currentAnnotationList, () => {
+watch(() => store.getters.currentCanvasAnnotationList, () => {
   draw()
 }, { deep: true })
 
@@ -225,6 +223,7 @@ const handleMousedown = (event) => {
   if (!found && !createContext) {
     const objectAnnotation = new ObjectAnnotation(
         mouseX, mouseY, 0, 0,
+        store.getters.currentManualIndex,
         store.getters.currentPageIndex,
         store.getters.currentAnnotationList.length
     )
