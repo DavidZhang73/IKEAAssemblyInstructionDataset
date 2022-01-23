@@ -1,7 +1,8 @@
 import { createStore } from 'vuex'
 import { getFileURL } from '~/utils/index.js'
-import { ObjectAnnotation } from '~/libs/annotationlib.js'
+import { ActionAnnotation, ObjectAnnotation } from '~/libs/annotationlib.js'
 import { debounce } from 'lodash-es'
+import { toRaw } from 'vue'
 
 const saveCurrentAnnotationListDebounce = debounce
 (
@@ -17,12 +18,29 @@ const saveCurrentAnnotationListDebounce = debounce
 
 const saveCurrentVideoListDebounce = debounce
 (
-  (context, videoList) => window.api.invoke('save-video-list', {
-    itemId: context.state.currentItem.id,
-    videoList: videoList
-  }).then(res => {
-    console.log(res)
-  }),
+  (context, videoList) => {
+    for (let i in videoList) {
+      if (videoList[i].annotationList) {
+        videoList[i].annotationList = videoList[i].annotationList.map(
+          annotation => {
+            return {
+              start: annotation.start,
+              end: annotation.end,
+              manual: annotation.manual,
+              page: annotation.page,
+              step: annotation.step,
+              description: annotation.description
+            }
+          })
+      }
+    }
+    window.api.invoke('save-video-list', {
+      itemId: context.state.currentItem.id,
+      videoList: videoList
+    }).then(res => {
+      console.log(res)
+    })
+  },
   1000
 )
 
@@ -133,6 +151,23 @@ const store = createStore({
             item.manualList[i].pageList[j].pathname
           )
         }
+        if (item.manualList[i].videoList) {
+          for (let j = 0; j < item.manualList[i].videoList.length; j++) {
+            if (item.manualList[i].videoList[j].annotaionList) {
+              item.manualList[i].videoList[j].annotaionList = item.manualList[i].videoList[j].annotaionList.map(
+                annotation => {
+                  return new ActionAnnotation(
+                    annotation.start,
+                    annotation.end,
+                    annotation.manual,
+                    annotation.page,
+                    annotation.step,
+                    annotation.description
+                  )
+                })
+            }
+          }
+        }
       }
       context.commit('setCurrentItem', item)
       context.commit('setCurrentManualIndex', 0)
@@ -145,6 +180,12 @@ const store = createStore({
     },
     saveCurrentVideoList (context, videoList) {
       context.commit('setCurrentVideoList', videoList)
+      saveCurrentVideoListDebounce(context, videoList)
+    },
+    saveCurrentVideoAnnotationList (context, annotationList) {
+      context.commit('setCurrentVideoAnnotationList', [...annotationList])
+      const videoList = toRaw(context.state.currentItem.videoList) || []
+      videoList[context.state.currentVideoIndex].annotationList = annotationList
       saveCurrentVideoListDebounce(context, videoList)
     }
   }

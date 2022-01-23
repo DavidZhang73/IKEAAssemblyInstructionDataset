@@ -4,7 +4,7 @@
       <div class="flex">
         <button
             class="flex-grow"
-            :class="[{'bg-indigo-400': $store.getters.currentManualIndex === annotation.manual && $store.getters.currentPageIndex === annotation.page && annotation.step === currentAnnotationIndex }]"
+            :class="[{'bg-indigo-400': $store.getters.currentManualIndex === annotation.manual && $store.getters.currentPageIndex === annotation.page && annotation.step === currentAnnotationStep }]"
             v-for="(annotation, index) in $store.getters.currentAnnotationList"
             @click="handleAnnotationClick(annotation)"
         >{{ index + 1 }}
@@ -132,7 +132,7 @@
       <td>
         <button
             class="rounded-tr-none rounded-br-none"
-            @click="handleLocate"
+            @click="handleLocate(annotation)"
         >
           <ZoomInIcon class="w-6"/>
         </button>
@@ -193,10 +193,8 @@ onMounted(() => {
 const draw = () => {
   const ctx = canvasRef.value.getContext('2d')
   ctx.clearRect(0, 0, imageWidth, imageHeight)
-  for (let annotation of store.getters.currentAnnotationList) {
-    if (annotation.page === store.getters.currentPageIndex) {
-      annotation.draw(ctx)
-    }
+  for (let annotation of store.getters.currentCanvasAnnotationList) {
+    annotation.draw(ctx)
   }
 }
 
@@ -210,12 +208,12 @@ const handleImgLoad = (e) => {
   draw()
 }
 
-const currentAnnotationIndex = ref(0)
+const currentAnnotationStep = ref(0)
 
 const handleAnnotationClick = (annotation) => {
   store.commit('setCurrentManualIndex', annotation.manual)
   store.commit('setCurrentPageIndex', annotation.page)
-  currentAnnotationIndex.value = annotation.step
+  currentAnnotationStep.value = annotation.step
 }
 
 const handleVideoClick = (index) => {
@@ -238,20 +236,25 @@ const handleAdd = async () => {
       start,
       store.getters.currentManualIndex,
       store.getters.currentPageIndex,
-      currentAnnotationIndex)
-  store.commit('setCurrentVideoAnnotationList', [...toRaw(store.getters.currentVideoAnnotationList), action])
+      currentAnnotationStep.value
+  )
+  await store.dispatch('saveCurrentVideoAnnotationList', [...toRaw(store.getters.currentVideoAnnotationList), action])
 }
 
-const handleDeleteAll = () => {
-  store.commit('setCurrentVideoAnnotationList', [])
+const handleDeleteAll = async () => {
+  await store.dispatch('saveCurrentVideoAnnotationList', [])
 }
 
 const handleLocateStart = async (index) => {
-  store.getters.currentVideoAnnotationList[index].start = await getCurrentVideoTime()
+  const videoAnnotationList = toRaw(store.getters.currentVideoAnnotationList)
+  videoAnnotationList[index].start = await getCurrentVideoTime()
+  await store.dispatch('saveCurrentVideoAnnotationList', videoAnnotationList)
 }
 
 const handleLocateEnd = async (index) => {
-  store.getters.currentVideoAnnotationList[index].end = await getCurrentVideoTime()
+  const videoAnnotationList = toRaw(store.getters.currentVideoAnnotationList)
+  videoAnnotationList[index].end = await getCurrentVideoTime()
+  await store.dispatch('saveCurrentVideoAnnotationList', videoAnnotationList)
 }
 
 const handlePrev = () => {
@@ -274,56 +277,43 @@ const handleLast = () => {
   store.commit('setCurrentPageIndex', store.getters.currentManual.pageList.length - 1)
 }
 
-const handleLocate = () => {
-
+const handleLocate = async (annotation) => {
+  store.commit('setCurrentManualIndex', annotation.manual)
+  store.commit('setCurrentPageIndex', annotation.page)
+  currentAnnotationStep.value = annotation.step
+  await player.seekTo(annotation.start)
+  await player.playVideo()
 }
 
 const handleMoveUp = (index) => {
-  // if (index - 1 >= 0) {
-  //   const localAnnotationList = toRaw(store.getters.currentAnnotationList);
-  //   [
-  //     localAnnotationList[index - 1].step,
-  //     localAnnotationList[index].step
-  //   ] = [
-  //     localAnnotationList[index].step,
-  //     localAnnotationList[index - 1].step
-  //   ];
-  //   [
-  //     localAnnotationList[index - 1], localAnnotationList[index]
-  //   ] = [
-  //     localAnnotationList[index],
-  //     localAnnotationList[index - 1]
-  //   ]
-  //   store.dispatch('saveCurrentAnnotationList', [...localAnnotationList])
-  // }
+  if (index - 1 >= 0) {
+    const localAnnotationList = toRaw(store.getters.currentVideoAnnotationList);
+    [
+      localAnnotationList[index - 1], localAnnotationList[index]
+    ] = [
+      localAnnotationList[index],
+      localAnnotationList[index - 1]
+    ]
+    store.dispatch('saveCurrentVideoAnnotationList', [...localAnnotationList])
+  }
 }
 
 const handleMoveDown = (index) => {
-  // const localAnnotationList = toRaw(store.getters.currentAnnotationList)
-  // if (index + 1 < localAnnotationList.length) {
-  //   [
-  //     localAnnotationList[index + 1].step,
-  //     localAnnotationList[index].step
-  //   ] = [
-  //     localAnnotationList[index].step,
-  //     localAnnotationList[index + 1].step
-  //   ];
-  //   [
-  //     localAnnotationList[index + 1], localAnnotationList[index]
-  //   ] = [
-  //     localAnnotationList[index],
-  //     localAnnotationList[index + 1]
-  //   ]
-  //   store.dispatch('saveCurrentAnnotationList', [...localAnnotationList])
-  // }
+  const localAnnotationList = toRaw(store.getters.currentVideoAnnotationList)
+  if (index + 1 < localAnnotationList.length) {
+    [
+      localAnnotationList[index + 1], localAnnotationList[index]
+    ] = [
+      localAnnotationList[index],
+      localAnnotationList[index + 1]
+    ]
+    store.dispatch('saveCurrentVideoAnnotationList', [...localAnnotationList])
+  }
 }
 
 const handleDelete = (index) => {
-  // const localAnnotationList = toRaw(store.getters.currentAnnotationList)
-  // localAnnotationList.splice(index, 1)
-  // for (let i in localAnnotationList) {
-  //   localAnnotationList[i].step = parseInt(i)
-  // }
-  // store.dispatch('saveCurrentAnnotationList', [...localAnnotationList])
+  const localAnnotationList = toRaw(store.getters.currentVideoAnnotationList)
+  localAnnotationList.splice(index, 1)
+  store.dispatch('saveCurrentVideoAnnotationList', [...localAnnotationList])
 }
 </script>
