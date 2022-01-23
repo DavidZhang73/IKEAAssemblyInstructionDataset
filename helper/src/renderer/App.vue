@@ -26,20 +26,50 @@
         style="height: calc(100vh - 3.5rem)"
     >
       <div
-          class="overflow-y-auto overflow-x-hidden transition-width"
-          :class="[{'w-[10vw]': categoryExpand}, {'w-0': !categoryExpand}]"
+          class="flex transition-width"
+          :class="[{'w-[30vw]': categoryExpand}, {'w-0': !categoryExpand}]"
       >
-        <div class="p-1 text-center border-b-[1px] border-gray-200">Category</div>
-        <div
-            class="p-1 text-sm text-center cursor-pointer"
-            :class="[
+        <div class="w-[10vw] overflow-y-auto overflow-x-hidden">
+          <div class="p-1 text-center border-b-[1px] border-gray-200">Category</div>
+          <div
+              class="p-1 text-sm text-center cursor-pointer"
+              :class="[
               {'bg-indigo-400 text-white': currentCategoryName === category.name},
               {'hover:bg-indigo-200': currentCategoryName !== category.name}
             ]"
-            v-for="category in categoryList"
-            :key="category.name"
-            @click="handleCurrentCategoryChange(category.name)"
-        >{{ category.name }}
+              v-for="category in categoryList"
+              :key="category.name"
+              @click="handleCurrentCategoryChange(category.name)"
+          >{{ category.name }}
+          </div>
+        </div>
+        <div class="w-[10vw] border-r-[1px] border-gray-200 overflow-y-auto overflow-x-hidden">
+          <div class="p-1 text-center border-b-[1px] border-gray-200">Sub Category</div>
+          <div
+              class="p-1 text-sm text-center cursor-pointer"
+              :class="[
+              {'bg-indigo-400 text-white': currentSubCategoryName === subCategory},
+              {'hover:bg-indigo-200': currentSubCategoryName !== subCategory}
+            ]"
+              v-for="subCategory in subCategoryList"
+              :key="subCategory"
+              @click="handleCurrentSubCategoryChange(subCategory)"
+          >{{ subCategory }}
+          </div>
+        </div>
+        <div class="w-[10vw] border-r-[1px] border-gray-200 overflow-y-auto overflow-x-hidden">
+          <div class="p-1 text-center border-b-[1px] border-gray-200">Item</div>
+          <div
+              class="p-1 text-sm text-center cursor-pointer"
+              :class="[
+              {'bg-indigo-400 text-white': currentItemId === item.id},
+              {'hover:bg-indigo-200': currentItemId !== item.id}
+            ]"
+              v-for="item in itemList"
+              :key="item.id"
+              @click="handleCurrentItemChange(item.id)"
+          >{{ item.name }}-{{ item.id }}
+          </div>
         </div>
       </div>
       <div
@@ -48,38 +78,6 @@
       >
         <ChevronLeftIcon v-if="categoryExpand"/>
         <ChevronRightIcon v-else/>
-      </div>
-      <div
-          class="w-[10vw] border-r-[1px] border-gray-200 overflow-y-auto overflow-x-hidden"
-      >
-        <div class="p-1 text-center border-b-[1px] border-gray-200">Sub Category</div>
-        <div
-            class="p-1 text-sm text-center cursor-pointer"
-            :class="[
-              {'bg-indigo-400 text-white': currentSubCategoryName === subCategory},
-              {'hover:bg-indigo-200': currentSubCategoryName !== subCategory}
-            ]"
-            v-for="subCategory in subCategoryList"
-            :key="subCategory"
-            @click="handleCurrentSubCategoryChange(subCategory)"
-        >{{ subCategory }}
-        </div>
-      </div>
-      <div
-          class="w-[10vw] border-r-[1px] border-gray-200 overflow-y-auto overflow-x-hidden"
-      >
-        <div class="p-1 text-center border-b-[1px] border-gray-200">Item</div>
-        <div
-            class="p-1 text-sm text-center cursor-pointer"
-            :class="[
-              {'bg-indigo-400 text-white': currentItemId === item.id},
-              {'hover:bg-indigo-200': currentItemId !== item.id}
-            ]"
-            v-for="item in itemList"
-            :key="item.id"
-            @click="handleCurrentItemChange(item.id)"
-        >{{ item.name }}-{{ item.id }}
-        </div>
       </div>
       <div class="flex-grow">
         <Item/>
