@@ -4,6 +4,20 @@ import { ActionAnnotation, ObjectAnnotation } from '~/libs/annotationlib.js'
 import { debounce } from 'lodash-es'
 import { toRaw } from 'vue'
 
+const saveCurrentItemProgressStatusDebounce = debounce
+(
+  context => {
+    window.api.invoke('save-manual-progress-status',
+      {
+        itemId: context.state.currentItem.id,
+        progressStatus: toRaw(context.state.currentItem.progressStatus)
+      }).then(res => {
+      console.log(res)
+    })
+  },
+  1000
+)
+
 const saveCurrentAnnotationListDebounce = debounce
 (
   (context, annotationList) => window.api.invoke('save-manual-annotation-list',
@@ -50,7 +64,8 @@ const store = createStore({
       currentItem: {},
       currentManualIndex: 0,
       currentPageIndex: 0,
-      currentVideoIndex: 0
+      currentVideoIndex: 0,
+      currentTabIndex: 0
     }
   },
   getters: {
@@ -59,6 +74,16 @@ const store = createStore({
     },
     currentItem (state) {
       return state.currentItem
+    },
+    currentItemProgressStatus (state) {
+      if (!!state.currentItem.id &&
+        state.currentItem.progressStatus &&
+        state.currentItem.progressStatus.length !== 0
+      ) {
+        return state.currentItem.progressStatus[state.currentTabIndex] || false
+      } else {
+        return false
+      }
     },
     currentManualIndex (state) {
       return state.currentManualIndex
@@ -102,11 +127,25 @@ const store = createStore({
     currentVideoAnnotationList (state) {
       return state.currentItem.videoList[state.currentVideoIndex].annotationList ||
         []
+    },
+    currentTabIndex (state) {
+      return state.currentTabIndex
     }
   },
   mutations: {
     setCurrentItem (state, item) {
       state.currentItem = item
+    },
+    setCurrentItemProgressStatus (state, status) {
+      if (!!state.currentItem.id &&
+        state.currentItem.progressStatus &&
+        state.currentItem.progressStatus.length !== 0
+      ) {
+        state.currentItem.progressStatus[state.currentTabIndex] = status
+      } else {
+        state.currentItem.progressStatus = [false, false, false]
+        state.currentItem.progressStatus[state.currentTabIndex] = status
+      }
     },
     setCurrentManualIndex (state, currentManualIndex) {
       state.currentManualIndex = currentManualIndex
@@ -126,6 +165,9 @@ const store = createStore({
     },
     setCurrentVideoAnnotationList (state, annotationList) {
       state.currentItem.videoList[state.currentVideoIndex].annotationList = annotationList
+    },
+    setCurrentTabIndex (state, index) {
+      state.currentTabIndex = index
     }
   },
   actions: {
@@ -173,6 +215,10 @@ const store = createStore({
       context.commit('setCurrentManualIndex', 0)
       context.commit('setCurrentPageIndex', 0)
       context.commit('setCurrentVideoIndex', 0)
+    },
+    saveCurrentItemProgressStatus (context, status) {
+      context.commit('setCurrentItemProgressStatus', status)
+      saveCurrentItemProgressStatusDebounce(context)
     },
     saveCurrentAnnotationList (context, annotationList) {
       context.commit('setCurrentAnnotationList', annotationList)

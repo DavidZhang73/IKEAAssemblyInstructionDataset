@@ -3,6 +3,8 @@
       v-if="$store.getters.currentItemExist"
       class="p-1 h-full flex flex-col"
       as="div"
+      v-slot="props"
+      @change="handleTabChange"
   >
     <TabList
         class="flex px-1 gap-x-1 items-center"
@@ -57,6 +59,21 @@
             Vidat
           </button>
         </Tab>
+        <SwitchGroup class="py-1">
+          <div class="flex items-center">
+            <SwitchLabel class="mr-4">Done</SwitchLabel>
+            <Switch
+                v-model="status"
+                :class='status ? "bg-green-500" : "bg-gray-200"'
+                class="relative inline-flex items-center h-6 transition-colors rounded-full w-11 focus:outline-none"
+            >
+        <span
+            :class='status ? "translate-x-4" : "translate-x-0"'
+            class="inline-block w-4 h-4 transition-transform transform bg-white rounded-full"
+        />
+            </Switch>
+          </div>
+        </SwitchGroup>
       </div>
       <div class="flex items-start overflow-x-auto">
         <img
@@ -84,7 +101,24 @@
 </template>
 
 <script setup>
-import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/vue'
+import { Switch, SwitchGroup, SwitchLabel, Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/vue'
 import Instruction from '~/components/Instruction.vue'
 import Video from '~/components/Video.vue'
-import Vidat from '~/components/Vidat.vue'</script>
+import Vidat from '~/components/Vidat.vue'
+import { computed } from 'vue'
+import { useStore } from 'vuex'
+
+const store = useStore()
+const status = computed({
+  get: () => {
+    return store.getters.currentItemProgressStatus
+  },
+  set: (status) => {
+    store.dispatch('saveCurrentItemProgressStatus', status)
+  }
+})
+
+const handleTabChange = (index) => {
+  store.commit('setCurrentTabIndex', index)
+}
+</script>

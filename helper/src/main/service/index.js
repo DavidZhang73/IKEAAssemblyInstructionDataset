@@ -58,4 +58,16 @@ module.exports = () => {
     )
     return { message: 'done', result: item }
   })
+
+  ipcMain.handle('save-manual-progress-status', async (e, data) => {
+    const { itemId, progressStatus } = data
+    const item = await database.collection('item').findOne(
+      { id: itemId }
+    )
+    item.progressStatus = progressStatus
+    await database.collection('item').updateOne(
+      { _id: item._id }, { '$set': item }
+    )
+    return { message: 'done', result: item }
+  })
 }
