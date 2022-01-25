@@ -127,8 +127,11 @@ const store = createStore({
       }
     },
     currentVideoAnnotationList (state) {
-      return state.currentItem.videoList[state.currentVideoIndex].annotationList ||
-        []
+      if (state.currentItem.videoList && state.currentItem.videoList.length !== 0 && state.currentVideoIndex) {
+        return state.currentItem.videoList[state.currentVideoIndex].annotationList || []
+      } else {
+        return []
+      }
     },
     currentTabIndex (state) {
       return state.currentTabIndex

@@ -1,163 +1,165 @@
 <template>
-  <div class="flex">
-    <div class="w-1/2">
-      <div class="flex">
-        <button
-            class="flex-grow"
-            :class="[{'bg-indigo-400': $store.getters.currentManualIndex === annotation.manual && $store.getters.currentPageIndex === annotation.page && annotation.step === currentAnnotationStep }]"
-            v-for="(annotation, index) in $store.getters.currentAnnotationList"
-            @click="handleAnnotationClick(annotation)"
-        >{{ index + 1 }}
-        </button>
+  <div v-if="$store.getters.currentVideo">
+    <div class="flex">
+      <div class="w-1/2">
+        <div class="flex">
+          <button
+              class="flex-grow"
+              :class="[{'bg-indigo-400': $store.getters.currentManualIndex === annotation.manual && $store.getters.currentPageIndex === annotation.page && annotation.step === currentAnnotationStep }]"
+              v-for="(annotation, index) in $store.getters.currentAnnotationList"
+              @click="handleAnnotationClick(annotation)"
+          >{{ index + 1 }}
+          </button>
+        </div>
+        <div class="flex items-center justify-center gap-x-4 py-4">
+          <div>
+            <button
+                class="rounded-tr-none rounded-br-none"
+                @click="handleFirst"
+            >
+              <ChevronDoubleLeftIcon class="w-6"/>
+            </button>
+            <button
+                class="rounded-tl-none rounded-bl-none"
+                @click="handlePrev"
+            >
+              <ChevronLeftIcon class="w-6"/>
+            </button>
+          </div>
+          <div class="relative">
+            <img
+                class="h-[40vh]"
+                :src="$store.getters.currentPage.localUrl"
+                alt="page"
+                @load="handleImgLoad"
+            >
+            <canvas
+                class="absolute top-0 h-[40vh]"
+                ref="canvasRef"
+            ></canvas>
+          </div>
+          <div>
+            <button
+                class="rounded-tr-none rounded-br-none"
+                @click="handleNext"
+            >
+              <ChevronRightIcon class="w-6"/>
+            </button>
+            <button
+                class="rounded-tl-none rounded-bl-none"
+                @click="handleLast"
+            >
+              <ChevronDoubleRightIcon class="w-6"/>
+            </button>
+          </div>
+        </div>
+        <div class="text-center">{{ $store.getters.currentPageIndex + 1 }} /
+          {{ $store.getters.currentManual.pageList.length }}
+        </div>
       </div>
-      <div class="flex items-center justify-center gap-x-4 py-4">
-        <div>
+      <div class="w-1/2">
+        <div class="flex">
           <button
-              class="rounded-tr-none rounded-br-none"
-              @click="handleFirst"
-          >
-            <ChevronDoubleLeftIcon class="w-6"/>
-          </button>
-          <button
-              class="rounded-tl-none rounded-bl-none"
-              @click="handlePrev"
-          >
-            <ChevronLeftIcon class="w-6"/>
+              class="flex-grow"
+              :class="[{'bg-indigo-400': $store.getters.currentVideoIndex === index}]"
+              v-for="(video, index) in $store.getters.currentVideoList"
+              @click="handleVideoClick(index)"
+          >{{ video.url.split('watch?v=')[1] }}
           </button>
         </div>
-        <div class="relative">
-          <img
-              class="h-[40vh]"
-              :src="$store.getters.currentPage.localUrl"
-              alt="page"
-              @load="handleImgLoad"
-          >
-          <canvas
-              class="absolute top-0 h-[40vh]"
-              ref="canvasRef"
-          ></canvas>
+        <div
+            id="videoPlayer"
+            class="w-full h-[40vh]"
+            v-if="$store.getters.currentVideo"
+        >
         </div>
-        <div>
-          <button
-              class="rounded-tr-none rounded-br-none"
-              @click="handleNext"
-          >
-            <ChevronRightIcon class="w-6"/>
-          </button>
-          <button
-              class="rounded-tl-none rounded-bl-none"
-              @click="handleLast"
-          >
-            <ChevronDoubleRightIcon class="w-6"/>
-          </button>
-        </div>
-      </div>
-      <div class="text-center">{{ $store.getters.currentPageIndex + 1 }} /
-        {{ $store.getters.currentManual.pageList.length }}
       </div>
     </div>
-    <div class="w-1/2">
-      <div class="flex">
-        <button
-            class="flex-grow"
-            :class="[{'bg-indigo-400': $store.getters.currentVideoIndex === index}]"
-            v-for="(video, index) in $store.getters.currentVideoList"
-            @click="handleVideoClick(index)"
-        >{{ video.url.split('watch?v=')[1] }}
-        </button>
-      </div>
-      <div
-          id="videoPlayer"
-          class="w-full h-[40vh]"
-          v-if="$store.getters.currentVideo"
-      >
-      </div>
-    </div>
+    <table class="w-full">
+      <thead>
+      <tr>
+        <th colspan="8">
+          <div class="inline">
+            Annotation
+            <button
+                class="rounded-tr-none rounded-br-none"
+                @click="handleAdd"
+            >
+              <PlusIcon class="w-6"/>
+            </button>
+            <button
+                class="rounded-tl-none rounded-bl-none"
+                @click="handleDeleteAll"
+            >
+              <TrashIcon class="text-red-500 w-6"/>
+            </button>
+          </div>
+        </th>
+      </tr>
+      <tr>
+        <th>start</th>
+        <th>end</th>
+        <th>description</th>
+        <th>manual</th>
+        <th>page</th>
+        <th>step</th>
+        <th>duration</th>
+        <th>operation</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr v-for="(annotation, index) in $store.getters.currentVideoAnnotationList">
+        <td>{{ annotation.start }}
+          <button @click="handleLocateStart(index)">
+            <LocationMarkerIcon class="w-6"/>
+          </button>
+        </td>
+        <td>{{ annotation.end }}
+          <button @click="handleLocateEnd(index)">
+            <LocationMarkerIcon class="w-6"/>
+          </button>
+        </td>
+        <td>
+          <input
+              class="w-full"
+              type="text"
+              v-model="annotation.description"
+          />
+        </td>
+        <td>{{ annotation.manual + 1 }}</td>
+        <td>{{ annotation.page + 1 }}</td>
+        <td>{{ annotation.step + 1 }}</td>
+        <td>{{ (annotation.end - annotation.start).toFixed(2) }}</td>
+        <td>
+          <button
+              class="rounded-tr-none rounded-br-none"
+              @click="handleLocate(annotation)"
+          >
+            <ZoomInIcon class="w-6"/>
+          </button>
+          <button
+              class="rounded-none"
+              @click="handleMoveUp(index)"
+          >
+            <ArrowUpIcon class="w-6"/>
+          </button>
+          <button
+              class="rounded-none"
+              @click="handleMoveDown(index)"
+          >
+            <ArrowDownIcon class="w-6"/>
+          </button>
+          <button
+              class="rounded-tl-none rounded-bl-none text-red-600"
+              @click="handleDelete(index)"
+          >
+            <TrashIcon class="w-6"/>
+          </button>
+        </td>
+      </tr>
+      </tbody>
+    </table>
   </div>
-  <table class="w-full">
-    <thead>
-    <tr>
-      <th colspan="8">
-        <div class="inline">
-          Annotation
-          <button
-              class="rounded-tr-none rounded-br-none"
-              @click="handleAdd"
-          >
-            <PlusIcon class="w-6"/>
-          </button>
-          <button
-              class="rounded-tl-none rounded-bl-none"
-              @click="handleDeleteAll"
-          >
-            <TrashIcon class="text-red-500 w-6"/>
-          </button>
-        </div>
-      </th>
-    </tr>
-    <tr>
-      <th>start</th>
-      <th>end</th>
-      <th>description</th>
-      <th>manual</th>
-      <th>page</th>
-      <th>step</th>
-      <th>duration</th>
-      <th>operation</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr v-for="(annotation, index) in $store.getters.currentVideoAnnotationList">
-      <td>{{ annotation.start }}
-        <button @click="handleLocateStart(index)">
-          <LocationMarkerIcon class="w-6"/>
-        </button>
-      </td>
-      <td>{{ annotation.end }}
-        <button @click="handleLocateEnd(index)">
-          <LocationMarkerIcon class="w-6"/>
-        </button>
-      </td>
-      <td>
-        <input
-            class="w-full"
-            type="text"
-            v-model="annotation.description"
-        />
-      </td>
-      <td>{{ annotation.manual + 1 }}</td>
-      <td>{{ annotation.page + 1 }}</td>
-      <td>{{ annotation.step + 1 }}</td>
-      <td>{{ (annotation.end - annotation.start).toFixed(2) }}</td>
-      <td>
-        <button
-            class="rounded-tr-none rounded-br-none"
-            @click="handleLocate(annotation)"
-        >
-          <ZoomInIcon class="w-6"/>
-        </button>
-        <button
-            class="rounded-none"
-            @click="handleMoveUp(index)"
-        >
-          <ArrowUpIcon class="w-6"/>
-        </button>
-        <button
-            class="rounded-none"
-            @click="handleMoveDown(index)"
-        >
-          <ArrowDownIcon class="w-6"/>
-        </button>
-        <button
-            class="rounded-tl-none rounded-bl-none text-red-600"
-            @click="handleDelete(index)"
-        >
-          <TrashIcon class="w-6"/>
-        </button>
-      </td>
-    </tr>
-    </tbody>
-  </table>
 </template>
 
 <script setup>
@@ -186,8 +188,13 @@ let imageHeight
 let imageWidth
 
 onMounted(() => {
-  player = YTPlayer('videoPlayer')
-  player.loadVideoById(store.getters.currentVideo.url.split('watch?v=')[1])
+  if (store.getters.currentVideo) {
+    player = YTPlayer('videoPlayer')
+    player.loadVideoById(store.getters.currentVideo.url.split('watch?v=')[1])
+    watch(() => store.getters.currentAnnotationList, () => {
+      draw()
+    }, { deep: true })
+  }
 })
 
 const draw = () => {
@@ -220,10 +227,6 @@ const handleVideoClick = (index) => {
   store.commit('setCurrentVideoIndex', index)
   player.loadVideoById(store.getters.currentVideo.url.split('watch?v=')[1])
 }
-
-watch(() => store.getters.currentAnnotationList, () => {
-  draw()
-}, { deep: true })
 
 const getCurrentVideoTime = async () => {
   return (await player.getCurrentTime()).toFixed(2)
