@@ -30,7 +30,7 @@
           :class="[{'w-[30vw]': categoryExpand}, {'w-0': !categoryExpand}]"
       >
         <div class="w-[10vw] overflow-y-auto overflow-x-hidden">
-          <div class="p-1 text-center border-b-[1px] border-gray-200">Category</div>
+          <div class="p-1 text-center border-b-[1px] border-gray-200">Category ({{ categoryList.length }})</div>
           <div
               class="p-1 text-sm text-center cursor-pointer"
               :class="[
@@ -44,7 +44,7 @@
           </div>
         </div>
         <div class="w-[10vw] border-r-[1px] border-gray-200 overflow-y-auto overflow-x-hidden">
-          <div class="p-1 text-center border-b-[1px] border-gray-200">Sub Category</div>
+          <div class="p-1 text-center border-b-[1px] border-gray-200">Sub Category ({{ subCategoryList.length }})</div>
           <div
               class="p-1 text-sm text-center cursor-pointer"
               :class="[
@@ -58,17 +58,33 @@
           </div>
         </div>
         <div class="w-[10vw] border-r-[1px] border-gray-200 overflow-y-auto overflow-x-hidden">
-          <div class="p-1 text-center border-b-[1px] border-gray-200">Item</div>
+          <div class="p-1 text-center border-b-[1px] border-gray-200">Item ({{
+              $store.getters.currentItemList.length
+            }})
+          </div>
           <div
               class="p-1 text-sm text-center cursor-pointer"
               :class="[
               {'bg-indigo-400 text-white': currentItemId === item.id},
               {'hover:bg-indigo-200': currentItemId !== item.id}
             ]"
-              v-for="item in itemList"
+              v-for="item in $store.getters.currentItemList"
               :key="item.id"
               @click="handleCurrentItemChange(item.id)"
           >{{ item.name }}-{{ item.id }}
+            <span v-if="item.progressStatus && item.progressStatus.filter(item => item).length !== 0">| </span>
+            <span
+                class="font-bold"
+                v-if="item.progressStatus && item.progressStatus[0]"
+            >I</span>
+            <span
+                class="font-bold"
+                v-if="item.progressStatus && item.progressStatus[1]"
+            >V</span>
+            <span
+                class="font-bold"
+                v-if="item.progressStatus && item.progressStatus[2]"
+            >A</span>
           </div>
         </div>
       </div>
@@ -88,7 +104,6 @@
 
 <script setup>
 import { onMounted, ref } from 'vue'
-// noinspection ES6UnusedImports
 import Item from './components/Item.vue'
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/vue/solid'
 import { useStore } from 'vuex'
@@ -102,7 +117,6 @@ const categoryList = ref([])
 const currentCategoryName = ref()
 const subCategoryList = ref([])
 const currentSubCategoryName = ref()
-const itemList = ref([])
 const currentItemId = ref()
 const categoryExpand = ref(false)
 
@@ -131,17 +145,12 @@ const handleConnect = () => {
 const handleCurrentCategoryChange = (name) => {
   currentCategoryName.value = name
   getSubCategoryList()
-  itemList.value = []
   currentItemId.value = null
 }
 
-const getItemList = () => {
-  window.api.invoke('get-item-list', {
-    'subCategoryName': currentSubCategoryName.value
-  }).then(res => {
-    itemList.value = res.result
-    handleCurrentItemChange(itemList.value[0].id)
-  })
+const getItemList = async () => {
+  await store.dispatch('getItemList', currentSubCategoryName.value)
+  handleCurrentItemChange(store.getters.currentItemList[0].id)
 }
 
 const handleCurrentSubCategoryChange = (name) => {
@@ -157,4 +166,5 @@ const handleCurrentItemChange = (id) => {
 onMounted(() => {
   handleConnect()
 })
+
 </script>

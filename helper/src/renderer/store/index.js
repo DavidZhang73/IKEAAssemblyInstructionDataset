@@ -6,15 +6,13 @@ import { toRaw } from 'vue'
 
 const saveCurrentItemProgressStatusDebounce = debounce
 (
-  context => {
-    window.api.invoke('save-manual-progress-status',
-      {
-        itemId: context.state.currentItem.id,
-        progressStatus: toRaw(context.state.currentItem.progressStatus)
-      }).then(res => {
-      console.log(res)
-    })
-  },
+  context => window.api.invoke('save-manual-progress-status',
+    {
+      itemId: context.state.currentItem.id,
+      progressStatus: toRaw(context.state.currentItem.progressStatus)
+    }).then(res => {
+    console.log(res)
+  }),
   1000
 )
 
@@ -61,6 +59,7 @@ const saveCurrentVideoListDebounce = debounce
 const store = createStore({
   state () {
     return {
+      currentItemList: [],
       currentItem: {},
       currentManualIndex: 0,
       currentPageIndex: 0,
@@ -69,6 +68,9 @@ const store = createStore({
     }
   },
   getters: {
+    currentItemList (state) {
+      return state.currentItemList
+    },
     currentItemExist (state) {
       return !!state.currentItem.id
     },
@@ -133,6 +135,9 @@ const store = createStore({
     }
   },
   mutations: {
+    setCurrentItemList (state, itemList) {
+      state.currentItemList = itemList
+    },
     setCurrentItem (state, item) {
       state.currentItem = item
     },
@@ -171,6 +176,11 @@ const store = createStore({
     }
   },
   actions: {
+    async getItemList (context, subCategoryName) {
+      const { result } = await window.api.invoke('get-item-list',
+        { subCategoryName })
+      context.commit('setCurrentItemList', result)
+    },
     async getItem (context, itemId) {
       const { result: item } = await window.api.invoke('get-item', { itemId })
       item.mainImageLocalUrl = await getFileURL(item.mainImagePathname)
