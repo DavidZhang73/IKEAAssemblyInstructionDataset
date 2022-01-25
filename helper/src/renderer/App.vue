@@ -58,9 +58,8 @@
           </div>
         </div>
         <div class="w-[10vw] border-r-[1px] border-gray-200 overflow-y-auto overflow-x-hidden">
-          <div class="p-1 text-center border-b-[1px] border-gray-200">Item ({{
-              $store.getters.currentItemList.length
-            }})
+          <div class="p-1 text-center border-b-[1px] border-gray-200">Item
+            ({{ progress }}/{{ $store.getters.currentItemList.length }})
           </div>
           <div
               class="p-1 text-sm text-center cursor-pointer"
@@ -68,9 +67,9 @@
               {'bg-indigo-400 text-white': currentItemId === item.id},
               {'hover:bg-indigo-200': currentItemId !== item.id}
             ]"
-              v-for="item in $store.getters.currentItemList"
+              v-for="(item, index) in $store.getters.currentItemList"
               :key="item.id"
-              @click="handleCurrentItemChange(item.id)"
+              @click="handleCurrentItemChange(item.id, index)"
           >{{ item.name }}-{{ item.id }}
             <span v-if="item.progressStatus && item.progressStatus.filter(item => item).length !== 0">| </span>
             <span
@@ -103,7 +102,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import Item from './components/Item.vue'
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/vue/solid'
 import { useStore } from 'vuex'
@@ -150,7 +149,7 @@ const handleCurrentCategoryChange = (name) => {
 
 const getItemList = async () => {
   await store.dispatch('getItemList', currentSubCategoryName.value)
-  handleCurrentItemChange(store.getters.currentItemList[0].id)
+  handleCurrentItemChange(store.getters.currentItemList[0].id, 0)
 }
 
 const handleCurrentSubCategoryChange = (name) => {
@@ -158,13 +157,28 @@ const handleCurrentSubCategoryChange = (name) => {
   getItemList()
 }
 
-const handleCurrentItemChange = (id) => {
+const handleCurrentItemChange = (id, index) => {
   currentItemId.value = id
+  store.commit('setCurrentItemIndex', index)
   store.dispatch('getItem', id)
 }
 
 onMounted(() => {
   handleConnect()
+})
+
+const progress = computed(() => {
+  if (store.getters.currentItemList && store.getters.currentItemList.length !== 0) {
+    return store.getters.currentItemList.filter(item => {
+      if (item.progressStatus && item.progressStatus.length !== 0) {
+        return item.progressStatus.filter(status => !status).length === 0
+      } else {
+        return false
+      }
+    }).length
+  } else {
+    return 0
+  }
 })
 
 </script>

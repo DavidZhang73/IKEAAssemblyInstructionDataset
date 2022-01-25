@@ -13,7 +13,7 @@ const saveCurrentItemProgressStatusDebounce = debounce
     }).then(res => {
     console.log(res)
   }),
-  1000
+  100
 )
 
 const saveCurrentAnnotationListDebounce = debounce
@@ -60,6 +60,7 @@ const store = createStore({
   state () {
     return {
       currentItemList: [],
+      currentItemIndex: 0,
       currentItem: {},
       currentManualIndex: 0,
       currentPageIndex: 0,
@@ -70,6 +71,9 @@ const store = createStore({
   getters: {
     currentItemList (state) {
       return state.currentItemList
+    },
+    currentItemIndex (state) {
+      return state.currentItemIndex
     },
     currentItemExist (state) {
       return !!state.currentItem.id
@@ -127,8 +131,10 @@ const store = createStore({
       }
     },
     currentVideoAnnotationList (state) {
-      if (state.currentItem.videoList && state.currentItem.videoList.length !== 0 && state.currentVideoIndex) {
-        return state.currentItem.videoList[state.currentVideoIndex].annotationList || []
+      if (state.currentItem.videoList && state.currentItem.videoList.length !==
+        0 && state.currentVideoIndex) {
+        return state.currentItem.videoList[state.currentVideoIndex].annotationList ||
+          []
       } else {
         return []
       }
@@ -140,6 +146,9 @@ const store = createStore({
   mutations: {
     setCurrentItemList (state, itemList) {
       state.currentItemList = itemList
+    },
+    setCurrentItemIndex (state, index) {
+      state.currentItemIndex = index
     },
     setCurrentItem (state, item) {
       state.currentItem = item
@@ -231,6 +240,9 @@ const store = createStore({
     },
     saveCurrentItemProgressStatus (context, status) {
       context.commit('setCurrentItemProgressStatus', status)
+      const newItemList = [...toRaw(context.getters.currentItemList)]
+      newItemList[context.getters.currentItemIndex] = context.getters.currentItem
+      context.commit('setCurrentItemList', newItemList)
       saveCurrentItemProgressStatusDebounce(context)
     },
     saveCurrentAnnotationList (context, annotationList) {
