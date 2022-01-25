@@ -78,7 +78,7 @@
 </template>
 
 <script setup>
-import { ref, toRaw } from 'vue'
+import { ref, toRaw, watch } from 'vue'
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
@@ -93,7 +93,7 @@ import { useStore } from 'vuex'
 const store = useStore()
 const webviewRef = ref()
 
-const search = `https://www.youtube.com/results?search_query=IKEA ${store.getters.currentItem.name} ${store.getters.currentItem.subCategory} assembly ${store.getters.currentItem.typeName} ${store.getters.currentItem.id}`
+const search = ref('')
 const handleAdd = () => {
   const url = webviewRef.value.getURL()
   if (!store.getters.currentVideoList.find(item => item.url === url) && url.split('watch?v=')[1]) {
@@ -109,4 +109,8 @@ const handleDelete = (index) => {
 const handleDeleteAll = () => {
   store.dispatch('saveCurrentVideoList', [])
 }
+
+watch(() => store.getters.currentItem, () => {
+  search.value = `https://www.youtube.com/results?search_query=IKEA ${store.getters.currentItem.name} ${store.getters.currentItem.subCategory} assembly ${store.getters.currentItem.typeName} ${store.getters.currentItem.id}`
+}, { immediate: true })
 </script>
