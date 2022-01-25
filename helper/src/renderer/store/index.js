@@ -132,7 +132,7 @@ const store = createStore({
     },
     currentVideoAnnotationList (state) {
       if (state.currentItem.videoList && state.currentItem.videoList.length !==
-        0 && state.currentVideoIndex) {
+        0) {
         return state.currentItem.videoList[state.currentVideoIndex].annotationList ||
           []
       } else {
