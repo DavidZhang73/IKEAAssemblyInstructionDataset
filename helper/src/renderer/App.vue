@@ -64,9 +64,9 @@
           <div
               class="p-1 text-sm text-center cursor-pointer"
               :class="[
-              {'bg-indigo-400 text-white': currentItemId === item.id},
-              {'hover:bg-indigo-200': currentItemId !== item.id}
-            ]"
+                {'bg-indigo-400 text-white': currentItemId === item.id},
+                {'hover:bg-indigo-200': currentItemId !== item.id}
+              ]"
               v-for="(item, index) in $store.getters.currentItemList"
               :key="item.id"
               @click="handleCurrentItemChange(item.id, index)"

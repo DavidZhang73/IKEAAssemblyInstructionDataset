@@ -4,8 +4,7 @@ import { ActionAnnotation, ObjectAnnotation } from '~/libs/annotationlib.js'
 import { debounce } from 'lodash-es'
 import { toRaw } from 'vue'
 
-const saveCurrentItemProgressStatusDebounce = debounce
-(
+const saveCurrentItemProgressStatusDebounce = debounce(
   context => window.api.invoke('save-manual-progress-status',
     {
       itemId: context.state.currentItem.id,
@@ -16,8 +15,7 @@ const saveCurrentItemProgressStatusDebounce = debounce
   100
 )
 
-const saveCurrentAnnotationListDebounce = debounce
-(
+const saveCurrentAnnotationListDebounce = debounce(
   (context, annotationList) => window.api.invoke('save-manual-annotation-list',
     {
       itemId: context.state.currentItem.id,
@@ -28,8 +26,7 @@ const saveCurrentAnnotationListDebounce = debounce
   1000
 )
 
-const saveCurrentVideoListDebounce = debounce
-(
+const saveCurrentVideoListDebounce = debounce(
   (context, videoList) => {
     for (let i in videoList) {
       if (videoList[i].annotationList) {
@@ -104,8 +101,7 @@ const store = createStore({
       return state.currentItem.manualList[state.currentManualIndex].pageList[state.currentPageIndex]
     },
     currentAnnotationList (state) {
-      return state.currentItem.annotationList ||
-        []
+      return state.currentItem.annotationList || []
     },
     currentCanvasAnnotationList (state) {
       if (state.currentItem.annotationList) {

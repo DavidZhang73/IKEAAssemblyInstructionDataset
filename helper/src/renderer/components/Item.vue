@@ -21,11 +21,26 @@
             $store.getters.currentItem.id
           }}
         </div>
-        <div class="text-sm">{{ $store.getters.currentItem.category }} - {{
+        <div>{{ $store.getters.currentItem.category }} - {{
             $store.getters.currentItem.subCategory
           }}
         </div>
-        <div class="text-sm">{{ $store.getters.currentItem.typeName }}</div>
+        <div>{{ $store.getters.currentItem.typeName }}</div>
+        <SwitchGroup class="py-1">
+          <div class="flex items-center">
+            <SwitchLabel class="mr-4 text-sm">Done</SwitchLabel>
+            <Switch
+                v-model="status"
+                :class='status ? "bg-green-500" : "bg-gray-200"'
+                class="relative inline-flex items-center h-6 transition-colors rounded-full w-11 focus:outline-none"
+            >
+        <span
+            :class='status ? "translate-x-4" : "translate-x-0"'
+            class="inline-block w-4 h-4 transition-transform transform bg-white rounded-full"
+        />
+            </Switch>
+          </div>
+        </SwitchGroup>
         <Tab
             v-slot="{ selected }"
             as="template"
@@ -59,31 +74,18 @@
             Vidat
           </button>
         </Tab>
-        <SwitchGroup class="py-1">
-          <div class="flex items-center">
-            <SwitchLabel class="mr-4">Done</SwitchLabel>
-            <Switch
-                v-model="status"
-                :class='status ? "bg-green-500" : "bg-gray-200"'
-                class="relative inline-flex items-center h-6 transition-colors rounded-full w-11 focus:outline-none"
-            >
-        <span
-            :class='status ? "translate-x-4" : "translate-x-0"'
-            class="inline-block w-4 h-4 transition-transform transform bg-white rounded-full"
-        />
-            </Switch>
-          </div>
-        </SwitchGroup>
       </div>
       <div class="flex items-start overflow-x-auto">
-        <img
-            v-for="(manual, index) in $store.getters.currentItem.manualList"
-            class="h-32 p-1 hover:bg-indigo-200 hover:cursor-pointer"
-            :class="[{'bg-indigo-500': $store.getters.currentManualIndex === index}]"
-            :src="manual.pageList[0].localUrl"
-            alt="manual first"
-            @click="$store.commit('setCurrentManualIndex', index)"
-        >
+        <div v-for="(manual, index) in $store.getters.currentItem.manualList">
+          <img
+              v-if="manual && manual.pageList.length !== 0"
+              class="h-32 p-1 hover:bg-indigo-200 hover:cursor-pointer"
+              :class="[{'bg-indigo-500': $store.getters.currentManualIndex === index}]"
+              :src="manual.pageList[0].localUrl"
+              alt="manual first"
+              @click="$store.commit('setCurrentManualIndex', index)"
+          >
+        </div>
       </div>
     </TabList>
     <TabPanels class="flex-grow">
