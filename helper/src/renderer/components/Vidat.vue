@@ -80,15 +80,15 @@
       <tr>
         <th colspan="8">
           <div class="inline">
-            Annotation
+            <span class="px-4 align-middle">Annotation</span>
             <button
-                class="rounded-tr-none rounded-br-none"
+                class="align-middle rounded-tr-none rounded-br-none"
                 @click="handleAdd"
             >
               <PlusIcon class="w-6"/>
             </button>
             <button
-                class="rounded-tl-none rounded-bl-none"
+                class="align-middle rounded-tl-none rounded-bl-none"
                 @click="handleDeleteAll"
             >
               <TrashIcon class="text-red-500 w-6"/>
@@ -109,13 +109,21 @@
       </thead>
       <tbody>
       <tr v-for="(annotation, index) in $store.getters.currentVideoAnnotationList">
-        <td>{{ annotation.start }}
-          <button @click="handleLocateStart(index)">
+        <td>
+          <span class="align-middle pr-2">{{ annotation.start }}</span>
+          <button
+              @click="handleLocateStart(index)"
+              class="align-middle"
+          >
             <LocationMarkerIcon class="w-6"/>
           </button>
         </td>
-        <td>{{ annotation.end }}
-          <button @click="handleLocateEnd(index)">
+        <td>
+          <span class="align-middle pr-2">{{ annotation.end }}</span>
+          <button
+              @click="handleLocateEnd(index)"
+              class="align-middle"
+          >
             <LocationMarkerIcon class="w-6"/>
           </button>
         </td>
