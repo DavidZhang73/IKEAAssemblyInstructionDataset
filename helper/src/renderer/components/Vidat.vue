@@ -160,6 +160,12 @@
       </tbody>
     </table>
   </div>
+  <div
+      v-else
+      class="text-3xl h-full flex items-center justify-center"
+  >
+    Please add a video first!
+  </div>
 </template>
 
 <script setup>
