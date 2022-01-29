@@ -1,6 +1,6 @@
 <template>
   <div class="h-full flex">
-    <div class="flex-1 flex flex-col py-4">
+    <div class="flex-1 flex flex-col py-2">
       <div class="flex-grow flex items-center justify-center gap-x-4">
         <div>
           <button
@@ -36,7 +36,8 @@
         {{ $store.getters.currentManual.pageList.length }}
       </div>
     </div>
-    <div class="flex-1 py-4 overflow-y-auto">
+    <div class="flex-1 py-2 overflow-y-auto"
+         style="height: calc(100vh - 152px - 3.5rem)">
       <table class="w-full">
         <thead>
         <tr>

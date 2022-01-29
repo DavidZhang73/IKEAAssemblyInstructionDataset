@@ -57,10 +57,10 @@
           {{ $store.getters.currentManual.pageList.length }}
         </div>
       </div>
-      <div class="w-1/2">
+      <div class="w-1/2 py-2">
         <div class="flex">
           <button
-              class="flex-grow"
+              class="flex-grow overflow-hidden overflow-ellipsis"
               :class="[{'bg-indigo-400': $store.getters.currentVideoIndex === index}]"
               v-for="(video, index) in $store.getters.currentVideoList"
               @click="handleVideoClick(index)"
@@ -69,7 +69,8 @@
         </div>
         <div
             id="videoPlayer"
-            class="w-full h-[40vh]"
+            class="w-full"
+            style="height: calc(40vh + 24px)"
             v-if="$store.getters.currentVideo"
         >
         </div>

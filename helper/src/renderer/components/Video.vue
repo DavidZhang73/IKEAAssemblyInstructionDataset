@@ -1,6 +1,6 @@
 <template>
   <div class="h-full flex justify-center">
-    <div class="w-[70%] flex flex-col">
+    <div class="w-[70%] flex flex-col py-1 pr-1">
       <div class="p-1 flex items-center justify-center">
         <button
             class="rounded-tr-none rounded-br-none"
@@ -34,7 +34,7 @@
       ></webview>
     </div>
     <div
-        class="w-[30%] flex-grow overflow-y-auto"
+        class="w-[30%] flex-grow py-1 overflow-y-auto"
         style="height: calc(100vh - 152px - 3.5rem)"
     >
       <div class="p-1 flex items-center justify-center">

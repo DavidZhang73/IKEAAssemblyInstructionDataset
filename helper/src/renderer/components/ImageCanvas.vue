@@ -1,14 +1,14 @@
 <template>
   <div class="relative border-2 border-gray-400">
     <img
-        style="height: calc(100vh - 212px - 3.5rem)"
+        style="height: calc(100vh - 196px - 3.5rem)"
         :src="$store.getters.currentPage.localUrl"
         alt="page"
         @load="handleImgLoad"
     >
     <canvas
         class="absolute top-0"
-        style="height: calc(100vh - 212px - 3.5rem)"
+        style="height: calc(100vh - 196px - 3.5rem)"
         :style="{cursor: cursor}"
         ref="canvasRef"
         @mousemove="handleMousemove"
