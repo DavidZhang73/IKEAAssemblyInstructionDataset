@@ -89,13 +89,13 @@
       </div>
     </TabList>
     <TabPanels class="flex-grow">
-      <TabPanel class="h-full">
+      <TabPanel class="h-full focus:outline-none">
         <Instruction/>
       </TabPanel>
-      <TabPanel class="h-full">
+      <TabPanel class="h-full focus:outline-none">
         <Video/>
       </TabPanel>
-      <TabPanel class="h-full">
+      <TabPanel class="h-full focus:outline-none">
         <Vidat/>
       </TabPanel>
     </TabPanels>
