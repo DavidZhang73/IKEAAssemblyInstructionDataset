@@ -1,7 +1,7 @@
 <template>
   <div class="h-full flex">
-    <div class="flex-1 flex flex-col">
-      <div class="flex-grow flex items-center justify-center gap-x-4 py-4">
+    <div class="flex-1 flex flex-col py-4">
+      <div class="flex-grow flex items-center justify-center gap-x-4">
         <div>
           <button
               class="rounded-tr-none rounded-br-none"

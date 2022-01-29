@@ -1,7 +1,7 @@
 <template>
   <div v-if="$store.getters.currentVideo">
     <div class="flex">
-      <div class="w-1/2">
+      <div class="w-1/2 py-2">
         <div class="flex">
           <button
               class="flex-grow"
@@ -11,7 +11,7 @@
           >{{ index + 1 }}
           </button>
         </div>
-        <div class="flex items-center justify-center gap-x-4 py-4">
+        <div class="flex items-center justify-center gap-x-4">
           <div>
             <button
                 class="rounded-tr-none rounded-br-none"
