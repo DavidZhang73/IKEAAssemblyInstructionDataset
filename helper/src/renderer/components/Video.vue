@@ -35,7 +35,7 @@
     </div>
     <div
         class="w-[30%] flex-grow overflow-y-auto"
-        style="height: calc(100vh - 148px - 3.5rem)"
+        style="height: calc(100vh - 152px - 3.5rem)"
     >
       <div class="p-1 flex items-center justify-center">
         <button
