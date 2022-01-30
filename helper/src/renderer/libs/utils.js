@@ -40,5 +40,9 @@ export default {
     } else {
       return '0.00'
     }
+  },
+  async getFileURL (pathname) {
+    const { result } = await window.api.invoke('get-binary-file', { pathname })
+    return URL.createObjectURL(new Blob([result]))
   }
 }

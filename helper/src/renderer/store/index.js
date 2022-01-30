@@ -1,5 +1,5 @@
 import { createStore } from 'vuex'
-import { getFileURL } from '~/utils/index.js'
+import utils from '~/libs/utils.js'
 import { ActionAnnotation, ObjectAnnotation } from '~/libs/annotationlib.js'
 import { debounce } from 'lodash-es'
 import { toRaw } from 'vue'
@@ -191,7 +191,7 @@ const store = createStore({
     },
     async getItem (context, itemId) {
       const { result: item } = await window.api.invoke('get-item', { itemId })
-      item.mainImageLocalUrl = await getFileURL(item.mainImagePathname)
+      item.mainImageLocalUrl = await utils.getFileURL(item.mainImagePathname)
       for (let i in item.annotationList) {
         const annotation = item.annotationList[i]
         item.annotationList[i] = new ObjectAnnotation(
@@ -207,7 +207,7 @@ const store = createStore({
       }
       for (let i = 0; i < item.manualList.length; i++) {
         for (let j = 0; j < item.manualList[i].pageList.length; j++) {
-          item.manualList[i].pageList[j].localUrl = await getFileURL(
+          item.manualList[i].pageList[j].localUrl = await utils.getFileURL(
             item.manualList[i].pageList[j].pathname
           )
         }
