@@ -133,6 +133,7 @@
               class="w-full"
               type="text"
               v-model="annotation.description"
+              @input="handleAnnotationDescriptionInput"
           />
         </td>
         <td>{{ annotation.manual + 1 }}</td>
@@ -294,6 +295,11 @@ const handleFirst = () => {
 
 const handleLast = () => {
   store.commit('setCurrentPageIndex', store.getters.currentManual.pageList.length - 1)
+}
+
+const handleAnnotationDescriptionInput = () => {
+  const localAnnotationList = toRaw(store.getters.currentVideoAnnotationList)
+  store.dispatch('saveCurrentVideoAnnotationList', [...localAnnotationList])
 }
 
 const handleLocate = async (annotation) => {
