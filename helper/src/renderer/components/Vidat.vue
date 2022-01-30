@@ -111,7 +111,7 @@
       <tbody>
       <tr v-for="(annotation, index) in $store.getters.currentVideoAnnotationList">
         <td>
-          <span class="align-middle pr-2">{{ annotation.start }}</span>
+          <span class="align-middle pr-2">{{ utils.toFixed2(annotation.start) }}</span>
           <button
               @click="handleLocateStart(index)"
               class="align-middle"
@@ -120,7 +120,7 @@
           </button>
         </td>
         <td>
-          <span class="align-middle pr-2">{{ annotation.end }}</span>
+          <span class="align-middle pr-2">{{ utils.toFixed2(annotation.end) }}</span>
           <button
               @click="handleLocateEnd(index)"
               class="align-middle"
@@ -194,6 +194,7 @@ import {
 } from '@heroicons/vue/solid'
 import { ActionAnnotation } from '~/libs/annotationlib.js'
 import YTPlayer from 'youtube-player'
+import utils from '~/libs/utils.js'
 
 const store = useStore()
 const canvasRef = ref()
@@ -244,7 +245,7 @@ const handleVideoClick = (index) => {
 }
 
 const getCurrentVideoTime = async () => {
-  return (await player.getCurrentTime()).toFixed(2)
+  return await player.getCurrentTime()
 }
 
 const handleAdd = async () => {

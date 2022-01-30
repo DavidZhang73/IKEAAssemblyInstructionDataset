@@ -40,7 +40,6 @@ export default {
     const b = parseInt(hex.slice(5, 7), 16) / 255
     // hsl
     const l = (Math.min(r, g, b) + Math.max(r, g, b)) / 2
-    console.log(l)
     return l < 0.5
   },
   /**
