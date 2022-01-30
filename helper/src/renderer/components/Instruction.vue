@@ -36,8 +36,10 @@
         {{ $store.getters.currentManual.pageList.length }}
       </div>
     </div>
-    <div class="flex-1 py-2 overflow-y-auto"
-         style="height: calc(100vh - 152px - 3.5rem)">
+    <div
+        class="flex-1 py-2 overflow-y-auto"
+        style="height: calc(100vh - 152px - 3.5rem)"
+    >
       <table class="w-full">
         <thead>
         <tr>
@@ -56,7 +58,9 @@
         </thead>
         <tbody>
         <tr v-for="(annotation, index) in $store.getters.currentAnnotationList">
-          <td :style="{'background-color': annotation.color}">{{ annotation.step + 1 }}</td>
+          <td :style="{'background-color': annotation.color, 'color': utils.isDarkColor(annotation.color) ? '#ffffff' : '#000000'}">
+            {{ annotation.step + 1 }}
+          </td>
           <td>{{ annotation.manual + 1 }}</td>
           <td>{{ annotation.page + 1 }}</td>
           <td>{{ utils.toFixed2(annotation.x) }}</td>
@@ -115,7 +119,7 @@ import { toRaw } from 'vue'
 
 const store = useStore()
 
-const handleLocate = (annotation) =>{
+const handleLocate = (annotation) => {
   console.log(annotation)
   store.commit('setCurrentManualIndex', annotation.manual)
   store.commit('setCurrentPageIndex', annotation.page)
