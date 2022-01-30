@@ -43,7 +43,15 @@
       <table class="w-full">
         <thead>
         <tr>
-          <th colspan="7">Annotation</th>
+          <th colspan="8">
+            <span class="px-4 align-middle">Annotation</span>
+            <button
+                class="align-middle rounded-tl-none rounded-bl-none"
+                @click="handleDeleteAll"
+            >
+              <TrashIcon class="text-red-500 w-6"/>
+            </button>
+          </th>
         </tr>
         <tr>
           <th>step</th>
@@ -143,6 +151,10 @@ const handleFirst = () => {
 
 const handleLast = () => {
   store.commit('setCurrentPageIndex', store.getters.currentManual.pageList.length - 1)
+}
+
+const handleDeleteAll = () => {
+  store.dispatch('saveCurrentAnnotationList', [])
 }
 
 const handleMoveUp = (index) => {
