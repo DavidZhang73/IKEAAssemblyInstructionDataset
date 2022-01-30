@@ -1,4 +1,5 @@
 import os
+import subprocess
 
 from tqdm.contrib.concurrent import thread_map
 
@@ -24,8 +25,11 @@ def get_image(item, output_path):
 
 def split_manual_to_page_list(pathname, output_path):
     os.makedirs(output_path, exist_ok=True)
-    cmd = f'pdftoppm -q -png {pathname} {os.path.join(output_path, "page")}'
-    os.system(cmd)
+    cmd = f'pdftoppm -q -png "{pathname}" "{os.path.join(output_path, "page")}"'
+    try:
+        subprocess.run(cmd, check=True)
+    except Exception as e:
+        print(e)
     return [
         {
             "pathname": os.path.abspath(os.path.join(output_path, file))
@@ -54,9 +58,23 @@ def get_manual(item, output_path):
 
 def get_item(item):
     output_path = get_output_path(item)
-    get_image(item, output_path)
+    # get_image(item, output_path)
     get_manual(item, output_path)
 
 
 if __name__ == '__main__':
-    thread_map(get_item, list(database.get_collection('item').find()), max_workers=4)
+    # item_list = list(database.get_collection('item').find())
+    # job_list = []
+    # for index, item in enumerate(item_list):
+    #     is_wrong = False
+    #     if item['manualList']:
+    #         for manual in item['manualList']:
+    #             if 'pageList' not in manual or not manual['pageList']:
+    #                 is_wrong = True
+    #                 break
+    #     else:
+    #         database.get_collection('item').delete_one({'_id': item['_id']})
+    #     if is_wrong:
+    #         job_list.append(item)
+    # thread_map(get_item, job_list)
+    pass
