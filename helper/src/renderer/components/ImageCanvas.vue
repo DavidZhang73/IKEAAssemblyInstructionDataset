@@ -149,7 +149,8 @@ const handleMousemove = (event) => {
   let found = null
   for (let i = 0; i < store.getters.currentAnnotationList.length; i++) {
     const objectAnnotation = store.getters.currentAnnotationList[i]
-    if (objectAnnotation.page === store.getters.currentPageIndex) {
+    if (objectAnnotation.manual === store.getters.currentManualIndex && objectAnnotation.page ===
+        store.getters.currentPageIndex) {
       if (!found && objectAnnotation.nearTopLeftAnchor(mouseX, mouseY)) {
         if (!dragContext) cursor.value = 'nw-resize'
         objectAnnotation.highlight = true
