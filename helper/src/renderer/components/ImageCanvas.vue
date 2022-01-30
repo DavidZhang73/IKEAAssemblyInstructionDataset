@@ -1,10 +1,12 @@
 <template>
   <div class="relative border-2 border-gray-400">
     <img
+        ref="imgRef"
         style="height: calc(100vh - 196px - 3.5rem)"
         :src="$store.getters.currentPage.localUrl"
         alt="page"
         @load="handleImgLoad"
+        @resize="handleResize"
     >
     <canvas
         class="absolute top-0"
@@ -21,12 +23,13 @@
 </template>
 
 <script setup>
-import { ref, toRaw, watch } from 'vue'
+import { onMounted, onUnmounted, ref, toRaw, watch } from 'vue'
 import { ObjectAnnotation } from '~/libs/annotationlib.js'
 import { useStore } from 'vuex'
 
 const store = useStore()
 
+const imgRef = ref()
 const canvasRef = ref()
 
 let imageHeight
@@ -39,6 +42,23 @@ const draw = () => {
     annotation.draw(ctx)
   }
 }
+
+const handleResize = (resizeObserverEntry) => {
+  const canvasElement = canvasRef.value
+  canvasElement.style.height = resizeObserverEntry[0].contentRect.height + 'px'
+  canvasElement.style.width = resizeObserverEntry[0].contentRect.width + 'px'
+}
+
+let observer
+
+onMounted(() => {
+  observer = new ResizeObserver(handleResize)
+  observer.observe(imgRef.value)
+})
+
+onUnmounted(() => {
+  observer.disconnect()
+})
 
 const handleImgLoad = (e) => {
   const { naturalHeight: height, naturalWidth: width } = e.target
