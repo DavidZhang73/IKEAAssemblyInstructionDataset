@@ -226,7 +226,7 @@ onMounted(() => {
     if (store.getters.currentAnnotationList && store.getters.currentAnnotationList.length !== 0) {
       _locateByAnnotation(store.getters.currentAnnotationList[0])
     }
-    watch(() => store.getters.currentAnnotationList, () => {
+    watch(() => [store.getters.currentAnnotationList, currentAnnotationStep.value], () => {
       draw()
     }, { deep: true })
   }
@@ -236,7 +236,11 @@ const draw = () => {
   const ctx = canvasRef.value.getContext('2d')
   ctx.clearRect(0, 0, imageWidth, imageHeight)
   for (let annotation of store.getters.currentCanvasAnnotationList) {
+    if (annotation.step === currentAnnotationStep.value) {
+      annotation.highlight = true
+    }
     annotation.draw(ctx)
+    annotation.highlight = false
   }
 }
 
