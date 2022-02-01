@@ -266,13 +266,21 @@ const handleDeleteAll = async () => {
 
 const handleLocateStart = async (index) => {
   const videoAnnotationList = toRaw(store.getters.currentVideoAnnotationList)
-  videoAnnotationList[index].start = await getCurrentVideoTime()
+  const currentVideoTime = await getCurrentVideoTime()
+  videoAnnotationList[index].start = currentVideoTime
+  if (currentVideoTime > videoAnnotationList[index].end) {
+    videoAnnotationList[index].end = currentVideoTime
+  }
   await store.dispatch('saveCurrentVideoAnnotationList', videoAnnotationList)
 }
 
 const handleLocateEnd = async (index) => {
   const videoAnnotationList = toRaw(store.getters.currentVideoAnnotationList)
-  videoAnnotationList[index].end = await getCurrentVideoTime()
+  const currentVideoTime = await getCurrentVideoTime()
+  videoAnnotationList[index].end = currentVideoTime
+  if (currentVideoTime < videoAnnotationList[index].start) {
+    videoAnnotationList[index].start = currentVideoTime
+  }
   await store.dispatch('saveCurrentVideoAnnotationList', videoAnnotationList)
 }
 
