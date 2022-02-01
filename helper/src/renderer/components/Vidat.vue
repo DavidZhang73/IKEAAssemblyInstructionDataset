@@ -110,7 +110,7 @@
       <tbody>
       <tr v-for="(annotation, index) in $store.getters.currentVideoAnnotationList">
         <td>
-          <span class="align-middle pr-2">{{ utils.toFixed2(annotation.start) }}</span>
+          <span class="align-middle pr-2">{{ utils.formatDuration(annotation.start) }}</span>
           <button
               @click="handleLocateStart(index)"
               class="align-middle"
@@ -119,7 +119,7 @@
           </button>
         </td>
         <td>
-          <span class="align-middle pr-2">{{ utils.toFixed2(annotation.end) }}</span>
+          <span class="align-middle pr-2">{{ utils.formatDuration(annotation.end) }}</span>
           <button
               @click="handleLocateEnd(index)"
               class="align-middle"
@@ -146,7 +146,7 @@
             <LocationMarkerIcon class="w-6"/>
           </button>
         </td>
-        <td>{{ (annotation.end - annotation.start).toFixed(2) }}</td>
+        <td>{{ (annotation.end - annotation.start).toFixed(2) }}s</td>
         <td>
           <button
               class="rounded-tr-none rounded-br-none"

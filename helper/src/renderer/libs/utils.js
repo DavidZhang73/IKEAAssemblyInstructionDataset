@@ -62,5 +62,20 @@ export default {
   async getFileURL (pathname) {
     const { result } = await window.api.invoke('get-binary-file', { pathname })
     return URL.createObjectURL(new Blob([result]))
+  },
+  /**
+   * format duration in to [hh:]mm:ss
+   * @param seconds
+   * @returns {string}
+   */
+  formatDuration (seconds) {
+    const h = Math.floor(seconds / 3600)
+    const m = Math.floor((seconds % 3600) / 60)
+    const s = Math.round(seconds % 60)
+    return [
+      h,
+      m > 9 ? m : (h ? '0' + m : m || '0'),
+      s > 9 ? s : '0' + s
+    ].filter(Boolean).join(':')
   }
 }
