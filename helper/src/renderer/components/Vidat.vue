@@ -137,7 +137,15 @@
         </td>
         <td>{{ annotation.manual + 1 }}</td>
         <td>{{ annotation.page + 1 }}</td>
-        <td>{{ annotation.step + 1 }}</td>
+        <td>
+          <span class="align-middle pr-2">{{ annotation.step + 1 }}</span>
+          <button
+              @click="handleLocateStep(index)"
+              class="align-middle"
+          >
+            <LocationMarkerIcon class="w-6"/>
+          </button>
+        </td>
         <td>{{ (annotation.end - annotation.start).toFixed(2) }}</td>
         <td>
           <button
@@ -321,6 +329,14 @@ const handleLast = () => {
 
 const handleAnnotationDescriptionInput = () => {
   const localAnnotationList = toRaw(store.getters.currentVideoAnnotationList)
+  store.dispatch('saveCurrentVideoAnnotationList', [...localAnnotationList])
+}
+
+const handleLocateStep = (index) => {
+  const localAnnotationList = toRaw(store.getters.currentVideoAnnotationList)
+  localAnnotationList[index].manual = store.getters.currentManualIndex
+  localAnnotationList[index].page = store.getters.currentPageIndex
+  localAnnotationList[index].step = currentAnnotationStep.value
   store.dispatch('saveCurrentVideoAnnotationList', [...localAnnotationList])
 }
 
