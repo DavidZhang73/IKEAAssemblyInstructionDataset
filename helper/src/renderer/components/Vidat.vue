@@ -2,9 +2,8 @@
   <div v-if="$store.getters.currentVideo">
     <div class="flex">
       <div class="w-1/2 py-2">
-        <div class="flex">
+        <div class="flex flex-wrap">
           <button
-              class="flex-grow"
               :class="[{'bg-indigo-400': $store.getters.currentManualIndex === annotation.manual && $store.getters.currentPageIndex === annotation.page && annotation.step === currentAnnotationStep }]"
               v-for="(annotation, index) in $store.getters.currentAnnotationList"
               @click="handleAnnotationClick(annotation)"
@@ -58,9 +57,9 @@
         </div>
       </div>
       <div class="w-1/2 py-2">
-        <div class="flex">
+        <div class="flex flex-wrap">
           <button
-              class="flex-grow overflow-hidden overflow-ellipsis"
+              class="overflow-hidden overflow-ellipsis"
               :class="[{'bg-indigo-400': $store.getters.currentVideoIndex === index}]"
               v-for="(video, index) in $store.getters.currentVideoList"
               @click="handleVideoClick(index)"
