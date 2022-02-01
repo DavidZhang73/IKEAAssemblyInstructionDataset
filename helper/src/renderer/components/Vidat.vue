@@ -112,8 +112,14 @@
         <td>
           <span class="align-middle pr-2">{{ utils.formatDuration(annotation.start) }}</span>
           <button
+              class="align-middle rounded-tr-none rounded-br-none"
               @click="handleLocateStart(index)"
-              class="align-middle"
+          >
+            <ZoomInIcon class="w-6"/>
+          </button>
+          <button
+              class="align-middle rounded-tl-none rounded-bl-none"
+              @click="handleSetStart(index)"
           >
             <LocationMarkerIcon class="w-6"/>
           </button>
@@ -121,8 +127,14 @@
         <td>
           <span class="align-middle pr-2">{{ utils.formatDuration(annotation.end) }}</span>
           <button
+              class="align-middle rounded-tr-none rounded-br-none"
               @click="handleLocateEnd(index)"
-              class="align-middle"
+          >
+            <ZoomInIcon class="w-6"/>
+          </button>
+          <button
+              class="align-middle rounded-tl-none rounded-bl-none"
+              @click="handleSetEnd(index)"
           >
             <LocationMarkerIcon class="w-6"/>
           </button>
@@ -284,6 +296,18 @@ const handleDeleteAll = async () => {
 }
 
 const handleLocateStart = async (index) => {
+  const currentVideoAnnotation = toRaw(store.getters.currentVideoAnnotationList)[index]
+  await player.seekTo(currentVideoAnnotation.start)
+  await player.pauseVideo()
+}
+
+const handleLocateEnd = async (index) => {
+  const currentVideoAnnotation = toRaw(store.getters.currentVideoAnnotationList)[index]
+  await player.seekTo(currentVideoAnnotation.end)
+  await player.pauseVideo()
+}
+
+const handleSetStart = async (index) => {
   const videoAnnotationList = toRaw(store.getters.currentVideoAnnotationList)
   const currentVideoTime = await getCurrentVideoTime()
   videoAnnotationList[index].start = currentVideoTime
@@ -293,7 +317,7 @@ const handleLocateStart = async (index) => {
   await store.dispatch('saveCurrentVideoAnnotationList', videoAnnotationList)
 }
 
-const handleLocateEnd = async (index) => {
+const handleSetEnd = async (index) => {
   const videoAnnotationList = toRaw(store.getters.currentVideoAnnotationList)
   const currentVideoTime = await getCurrentVideoTime()
   videoAnnotationList[index].end = currentVideoTime
