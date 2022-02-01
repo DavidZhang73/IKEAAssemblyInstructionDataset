@@ -203,10 +203,21 @@ let player
 let imageHeight
 let imageWidth
 
+const currentAnnotationStep = ref(0)
+
+const _locateByAnnotation = (annotation) => {
+  store.commit('setCurrentManualIndex', annotation.manual)
+  store.commit('setCurrentPageIndex', annotation.page)
+  currentAnnotationStep.value = annotation.step
+}
+
 onMounted(() => {
   if (store.getters.currentVideo) {
     player = YTPlayer('videoPlayer')
     player.loadVideoById(store.getters.currentVideo.url.split('watch?v=')[1])
+    if (store.getters.currentAnnotationList && store.getters.currentAnnotationList.length !== 0) {
+      _locateByAnnotation(store.getters.currentAnnotationList[0])
+    }
     watch(() => store.getters.currentAnnotationList, () => {
       draw()
     }, { deep: true })
@@ -231,12 +242,8 @@ const handleImgLoad = (e) => {
   draw()
 }
 
-const currentAnnotationStep = ref(0)
-
 const handleAnnotationClick = (annotation) => {
-  store.commit('setCurrentManualIndex', annotation.manual)
-  store.commit('setCurrentPageIndex', annotation.page)
-  currentAnnotationStep.value = annotation.step
+  _locateByAnnotation(annotation)
 }
 
 const handleVideoClick = (index) => {
@@ -285,23 +292,31 @@ const handleLocateEnd = async (index) => {
 }
 
 const handlePrev = () => {
-  if (store.getters.currentPageIndex !== 0) {
-    store.commit('setCurrentPageIndex', store.getters.currentPageIndex - 1)
+  if (store.getters.currentAnnotationList
+      && store.getters.currentAnnotationList.length !== 0
+      && currentAnnotationStep.value !== 0) {
+    _locateByAnnotation(store.getters.currentAnnotationList[currentAnnotationStep.value - 1])
   }
 }
 
 const handleNext = () => {
-  if (store.getters.currentPageIndex !== store.getters.currentManual.pageList.length - 1) {
-    store.commit('setCurrentPageIndex', store.getters.currentPageIndex + 1)
+  if (store.getters.currentAnnotationList
+      && store.getters.currentAnnotationList.length !== 0
+      && currentAnnotationStep.value !== store.getters.currentAnnotationList.length - 1) {
+    _locateByAnnotation(store.getters.currentAnnotationList[currentAnnotationStep.value + 1])
   }
 }
 
 const handleFirst = () => {
-  store.commit('setCurrentPageIndex', 0)
+  if (store.getters.currentAnnotationList && store.getters.currentAnnotationList.length !== 0) {
+    _locateByAnnotation(store.getters.currentAnnotationList[0])
+  }
 }
 
 const handleLast = () => {
-  store.commit('setCurrentPageIndex', store.getters.currentManual.pageList.length - 1)
+  if (store.getters.currentAnnotationList && store.getters.currentAnnotationList.length !== 0) {
+    _locateByAnnotation(store.getters.currentAnnotationList[store.getters.currentAnnotationList.length - 1])
+  }
 }
 
 const handleAnnotationDescriptionInput = () => {
