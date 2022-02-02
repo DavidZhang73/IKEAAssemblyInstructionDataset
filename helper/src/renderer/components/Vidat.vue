@@ -239,7 +239,9 @@ onMounted(() => {
       _locateByAnnotation(store.getters.currentAnnotationList[0])
     }
     watch(() => [store.getters.currentAnnotationList, currentAnnotationStep.value], () => {
-      draw()
+      if (store.getters.currentVideo) {
+        draw()
+      }
     }, { deep: true })
   }
 })
