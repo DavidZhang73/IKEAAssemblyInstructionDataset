@@ -171,7 +171,7 @@ const progress = computed(() => {
   if (store.getters.currentItemList && store.getters.currentItemList.length !== 0) {
     return store.getters.currentItemList.filter(item => {
       if (item.progressStatus && item.progressStatus.length !== 0) {
-        return item.progressStatus.filter(status => !status).length === 0
+        return item.progressStatus[0] && item.progressStatus[1]
       } else {
         return false
       }

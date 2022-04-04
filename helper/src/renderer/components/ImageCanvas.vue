@@ -24,8 +24,8 @@
 
 <script setup>
 import { onMounted, onUnmounted, ref, toRaw, watch } from 'vue'
-import { ObjectAnnotation } from '~/libs/annotationlib.js'
 import { useStore } from 'vuex'
+import { ObjectAnnotation } from '~/libs/annotationlib.js'
 
 const store = useStore()
 
@@ -147,7 +147,7 @@ const handleMousemove = (event) => {
   }
   // highlight the object
   let found = null
-  for (let i = 0; i < store.getters.currentAnnotationList.length; i++) {
+  for (let i = store.getters.currentAnnotationList.length - 1; i >= 0; i--) {
     const objectAnnotation = store.getters.currentAnnotationList[i]
     if (objectAnnotation.manual === store.getters.currentManualIndex && objectAnnotation.page ===
         store.getters.currentPageIndex) {

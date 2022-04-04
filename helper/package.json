@@ -13,6 +13,7 @@
     "postinstall": "install-app-deps"
   },
   "dependencies": {
+    "@cliqz/adblocker-electron": "^1.23.7",
     "@headlessui/vue": "^1.4.2",
     "@heroicons/vue": "^1.0.5",
     "electron-context-menu": "^3.0.0",
@@ -20,6 +21,7 @@
     "electron-window-state": "^5.0.3",
     "lodash-es": "^4.17.21",
     "mongodb": "^4.2.1",
+    "node-fetch": "^2.6.7",
     "vue": "^3.0.11",
     "vuex": "^4.0.2",
     "youtube-player": "^5.5.2"

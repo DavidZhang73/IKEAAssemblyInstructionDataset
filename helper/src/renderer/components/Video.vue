@@ -78,7 +78,6 @@
 </template>
 
 <script setup>
-import { ref, toRaw, watch } from 'vue'
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
@@ -88,6 +87,7 @@ import {
   TrashIcon,
   ZoomInIcon
 } from '@heroicons/vue/solid'
+import { ref, toRaw, watch } from 'vue'
 import { useStore } from 'vuex'
 
 const store = useStore()
@@ -99,18 +99,24 @@ const handleAdd = () => {
   if (!store.getters.currentVideoList.find(item => item.url === url) && url.split('watch?v=')[1]) {
     store.dispatch('saveCurrentVideoList',
         [...toRaw(store.getters.currentVideoList), { 'url': url }])
+    store.dispatch('saveCurrentItemProgressStatus', true)
   }
 }
 
 const handleDelete = (index) => {
   store.dispatch('saveCurrentVideoList', toRaw(store.getters.currentVideoList).filter((video, i) => i !== index))
+  if (store.getters.currentVideoList.length === 0) {
+    store.dispatch('saveCurrentItemProgressStatus', false)
+  }
 }
 
 const handleDeleteAll = () => {
   store.dispatch('saveCurrentVideoList', [])
+  store.dispatch('saveCurrentItemProgressStatus', false)
 }
 
 watch(() => store.getters.currentItem, () => {
-  search.value = `https://www.youtube.com/results?search_query=IKEA ${store.getters.currentItem.name} ${store.getters.currentItem.subCategory} assembly ${store.getters.currentItem.typeName} ${store.getters.currentItem.id}`
+  const searchQuery = `IKEA ${store.getters.currentItem.name} ${store.getters.currentItem.typeName} assemble ${store.getters.currentItem.id}`
+  search.value = `https://www.youtube.com/results?search_query=${encodeURIComponent(searchQuery)}`
 }, { immediate: true })
 </script>

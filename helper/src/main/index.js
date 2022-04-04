@@ -3,6 +3,8 @@ const initService = require('./service/index.js')
 const { app } = require('electron')
 const contextMenu = require('electron-context-menu')
 const path = require('path')
+const { ElectronBlocker } = require('@cliqz/adblocker-electron')
+const fetch = require('node-fetch')
 
 try {
   require('electron-reloader')(module, { watchRenderer: false })
@@ -46,7 +48,7 @@ function createMainWindow () {
   const port = process.env.PORT || 3000
   if (isDev) {
     loadVitePage(port)
-    mainWindow.webContents.openDevTools({mode:'detach'})
+    mainWindow.webContents.openDevTools({ mode: 'detach' })
   } else {
     mainWindow.loadFile('dist/index.html')
   }
@@ -56,6 +58,9 @@ function createMainWindow () {
     console.log('READY')
     mainWindow.show()
     mainWindow.focus()
+    ElectronBlocker.fromPrebuiltAdsAndTracking(fetch).then((blocker) => {
+      blocker.enableBlockingInSession(mainWindow.webContents.session)
+    })
   })
 }
 

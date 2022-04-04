@@ -23,7 +23,7 @@ const saveCurrentAnnotationListDebounce = debounce(
     }).then(res => {
     console.log(res)
   }),
-  1000
+  200
 )
 
 const saveCurrentVideoListDebounce = debounce(
