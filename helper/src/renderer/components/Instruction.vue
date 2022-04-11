@@ -40,7 +40,10 @@
         class="flex-1 py-2 overflow-y-auto"
         style="height: calc(100vh - 152px - 3.5rem)"
     >
-      <table class="w-full">
+      <table
+          class="w-full"
+          ref="table"
+      >
         <thead>
         <tr>
           <th colspan="8">
@@ -119,16 +122,15 @@ import {
   TrashIcon,
   ZoomInIcon
 } from '@heroicons/vue/solid'
-import utils from '~/libs/utils.js'
+import { onMounted, ref, toRaw, watch } from 'vue'
 import { useStore } from 'vuex'
 
 import ImageCanvas from '~/components/ImageCanvas.vue'
-import { toRaw } from 'vue'
+import utils from '~/libs/utils.js'
 
 const store = useStore()
 
 const handleLocate = (annotation) => {
-  console.log(annotation)
   store.commit('setCurrentManualIndex', annotation.manual)
   store.commit('setCurrentPageIndex', annotation.page)
 }
@@ -205,4 +207,15 @@ const handleDelete = (index) => {
   }
   store.dispatch('saveCurrentAnnotationList', [...localAnnotationList])
 }
+
+const table = ref('table')
+onMounted(() => {
+  const tableElement = table.value
+  watch(
+      () => store.getters.currentAnnotationList,
+      () => {
+        console.log(tableElement.scrollTop, tableElement.scrollHeight)
+        tableElement.scrollTop = tableElement.scrollHeight + 400
+      })
+})
 </script>
