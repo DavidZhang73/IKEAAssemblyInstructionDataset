@@ -17,12 +17,12 @@
           alt="main image"
       >
       <div>
-        <div class="text-xl font-extrabold">{{ $store.getters.currentItem.name }} - {{
+        <div class="text-xl font-extrabold select-text">{{ $store.getters.currentItem.name }} - {{
             $store.getters.currentItem.id
           }}
         </div>
-        <div class="text-sm">{{ $store.getters.currentItem.category }} - {{ $store.getters.currentItem.subCategory }}</div>
-        <div class="text-sm">{{ $store.getters.currentItem.typeName }}</div>
+        <div class="text-sm select-text">{{ $store.getters.currentItem.category }} - {{ $store.getters.currentItem.subCategory }}</div>
+        <div class="text-sm select-text">{{ $store.getters.currentItem.typeName }}</div>
         <SwitchGroup class="py-1">
           <div class="flex items-center">
             <SwitchLabel class="mr-4 text-sm">Done</SwitchLabel>
