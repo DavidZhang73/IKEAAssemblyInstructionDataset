@@ -11,7 +11,7 @@ ITEM_KEYS_TOO_SAVE = ['id', 'name', 'category', 'subCategory', 'typeName', 'pipU
                       'manualList', 'annotationList', 'videoList']
 MANUAL_KEYS_TO_SAVE = ['url']
 ANNOTATION_KEYS_TO_SAVE = ['manual', 'page', 'step', 'x', 'y', 'width', 'height', 'color']
-VIDEO_KEYS_TO_SAVE = ['url', 'annotationList']
+VIDEO_KEYS_TO_SAVE = ['url']
 VIDEO_ANNOTATION_KEYS_TO_SAVE = ['manual', 'page', 'step', 'start', 'end', 'description']
 os.makedirs(OUTPUT_PATH, exist_ok=True)
 
@@ -36,8 +36,7 @@ def get_item_list(raw_item_list):
         if 'progressStatus' in item \
                 and item['progressStatus'] \
                 and item['progressStatus'][0] \
-                and item['progressStatus'][1] \
-                and item['progressStatus'][2]:
+                and item['progressStatus'][1]:
             if 'manualList' in item \
                     and 'manualList' in ITEM_KEYS_TOO_SAVE \
                     and MANUAL_KEYS_TO_SAVE:
@@ -65,4 +64,6 @@ def get_item_list(raw_item_list):
 
 if __name__ == '__main__':
     item_list = get_item_list(database.get_collection('item').find())
+    print(f"{len(item_list)} items")
+    print(f"{sum([len(item['videoList']) for item in item_list])} videos")
     save_to_json_file(item_list, OUTPUT_PATHNAME)
