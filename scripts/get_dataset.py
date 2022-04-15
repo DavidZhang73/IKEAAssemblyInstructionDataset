@@ -1,6 +1,6 @@
 import json
 import os
-from time import sleep
+from time import sleep, time
 import logging
 
 import fitz
@@ -14,7 +14,7 @@ DATASET_PATH = os.path.join('..', 'dataset')
 DATASET_JSON_NAME = 'IkeaAssemblyInstructionDataset.json'
 DATASET_JSON_PATHNAME = os.path.join(DATASET_PATH, DATASET_JSON_NAME)
 LOG_LEVEL = logging.DEBUG
-LOG_PATHNAME = os.path.join(DATASET_PATH, 'get_dataset.log')
+LOG_PATHNAME = os.path.join(DATASET_PATH, f'{time()}.log')
 USE_CACHE = True
 YT_DLP_OPTION = {
     'format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best',
