@@ -10,6 +10,8 @@ import yt_dlp
 from PIL import Image
 from tqdm.contrib.concurrent import thread_map
 
+from queue import Queue
+
 # Configuration
 DATASET_PATH = os.path.join('..', 'dataset')
 DATASET_JSON_NAME = 'IkeaAssemblyInstructionDataset.json'
@@ -157,6 +159,9 @@ def get_video(item, output_path):
     logger.debug(f'Finish to get video for {item["id"]}')
 
 
+error_item_queue = Queue()
+
+
 def get_item(item):
     logger.debug(f'Start to get item {item["id"]}')
     output_path = _get_output_path(item)
@@ -165,6 +170,7 @@ def get_item(item):
         get_manual(item, output_path)
         get_video(item, output_path)
     except Exception as e:
+        error_item_queue.put(item)
         logger.error(f'Error when get item {item["id"]}: {e}\n{traceback.format_exc()}')
     logger.debug(f'Finish to get item {item["id"]}')
 
@@ -173,3 +179,8 @@ if __name__ == '__main__':
     with open(DATASET_JSON_PATHNAME, 'r', encoding='utf8') as f:
         item_list = json.load(f)
     thread_map(get_item, item_list)
+    print(f'Successfully get {len(item_list) - error_item_queue.qsize()} items')
+    if error_item_queue.qsize():
+        print(f'Error items ({error_item_queue.qsize()}):')
+        for item in error_item_queue.queue:
+            print(item["id"])
