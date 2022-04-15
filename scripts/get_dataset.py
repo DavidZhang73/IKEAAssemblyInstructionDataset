@@ -125,10 +125,7 @@ def get_manual(item, output_path):
                     pix = page.get_pixmap(dpi=150)
                     pix_list.append(pix)
                     output_pathname = os.path.join(os.path.abspath(page_output_path), f'page-{index + 1}.png')
-                    if os.path.exists(output_pathname) and USE_CACHE:
-                        logger.info(f'{output_pathname} exists, skip')
-                    else:
-                        pix.save(output_pathname)
+                    pix.save(output_pathname)
                 manual_pix_list.append(pix_list)
     # stepList
     step_output_path = os.path.join(output_path, 'step')
