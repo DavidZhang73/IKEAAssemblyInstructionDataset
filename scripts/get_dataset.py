@@ -98,15 +98,15 @@ def _get_output_path(item):
 
 # Main functions
 def get_image(item, output_path):
-    logger.info(f'Start to get image for {item["id"]}')
+    logger.debug(f'Start to get image for {item["id"]}')
     url = item['mainImageUrl']
     if url:
         _get_binary(url, output_path, _get_output_name(url))
-    logger.info(f'Finish to get image for {item["id"]}')
+    logger.debug(f'Finish to get image for {item["id"]}')
 
 
 def get_manual(item, output_path):
-    logger.info(f'Start to get manual for {item["id"]}')
+    logger.debug(f'Start to get manual for {item["id"]}')
     manual_pix_list = []
     for i, manual in enumerate(item['manualList']):
         url = manual['url']
@@ -144,20 +144,20 @@ def get_manual(item, output_path):
             img.save(output_pathname)
     else:
         logger.info(f'steps for item {item["id"]} exist, skip')
-    logger.info(f'Finish to get manual for {item["id"]}')
+    logger.debug(f'Finish to get manual for {item["id"]}')
 
 
 def get_video(item, output_path):
-    logger.info(f'Start to get video for {item["id"]}')
+    logger.debug(f'Start to get video for {item["id"]}')
     for i, video in enumerate(item['videoList']):
         url = video['url']
         if url:
             _get_video(url, os.path.join(output_path, 'video'))
-    logger.info(f'Finish to get video for {item["id"]}')
+    logger.debug(f'Finish to get video for {item["id"]}')
 
 
 def get_item(item):
-    logger.info(f'Start to get item {item["id"]}')
+    logger.debug(f'Start to get item {item["id"]}')
     output_path = _get_output_path(item)
     try:
         get_image(item, output_path)
@@ -165,7 +165,7 @@ def get_item(item):
         get_video(item, output_path)
     except Exception as e:
         logger.error(f'Error when get item {item["id"]}: {e}')
-    logger.info(f'Finish to get item {item["id"]}')
+    logger.debug(f'Finish to get item {item["id"]}')
 
 
 if __name__ == '__main__':
