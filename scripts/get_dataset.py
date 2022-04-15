@@ -1,5 +1,6 @@
 import json
 import os
+import traceback
 from time import sleep, time
 import logging
 
@@ -164,7 +165,7 @@ def get_item(item):
         get_manual(item, output_path)
         get_video(item, output_path)
     except Exception as e:
-        logger.error(f'Error when get item {item["id"]}: {e}')
+        logger.error(f'Error when get item {item["id"]}: {e}\ntraceback.format_exc()')
     logger.debug(f'Finish to get item {item["id"]}')
 
 
