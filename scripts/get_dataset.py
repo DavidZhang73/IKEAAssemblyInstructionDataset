@@ -162,9 +162,12 @@ def get_video(item, output_path):
 def get_item(item):
     logger.info(f'Start to get item {item["id"]}')
     output_path = _get_output_path(item)
-    get_image(item, output_path)
-    get_manual(item, output_path)
-    get_video(item, output_path)
+    try:
+        get_image(item, output_path)
+        get_manual(item, output_path)
+        get_video(item, output_path)
+    except Exception as e:
+        logger.error(f'Error when get item {item["id"]}: {e}')
     logger.info(f'Finish to get item {item["id"]}')
 
 
