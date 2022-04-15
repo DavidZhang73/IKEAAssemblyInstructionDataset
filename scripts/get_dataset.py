@@ -1,45 +1,60 @@
 import json
 import os
 from time import sleep
+import logging
 
 import fitz
 import requests
-import youtube_dl
+import yt_dlp
 from PIL import Image
 from tqdm.contrib.concurrent import thread_map
 
-USE_CACHE = True
-
+# Configuration
 DATASET_PATH = os.path.join('..', 'dataset')
 DATASET_JSON_NAME = 'IkeaAssemblyInstructionDataset.json'
 DATASET_JSON_PATHNAME = os.path.join(DATASET_PATH, DATASET_JSON_NAME)
-
-YOUTUBE_DL_OPTION = {
-    # 'format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best',
-    'format': 'worst[ext=mp4]+worst[ext=m4a]/worst[ext=mp4]/worst',
+LOG_LEVEL = logging.DEBUG
+LOG_PATHNAME = os.path.join(DATASET_PATH, 'get_dataset.log')
+USE_CACHE = True
+YT_DLP_OPTION = {
+    'format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best',
+    # 'format': 'worst[ext=mp4]+worst[ext=m4a]/worst[ext=mp4]/worst',
     'quiet': True,
-    'restrictfilenames': True
+    'restrictfilenames': True,
+    'noprogress': True
 }
 
+# Logging
+logging.basicConfig(
+    level=LOG_LEVEL, filename=LOG_PATHNAME, filemode='w', datefmt='%Y-%m-%d %H:%M:%S',
+    format='%(asctime)s [%(processName)s(%(process)d)] [%(threadName)s(%(thread)d)] '
+           '[%(funcName)s(%(lineno)d)] [%(levelname)s]: %(message)s')
+logger = logging.getLogger()
 
+
+# Retry decorator
+def retry(times):
+    def decorator(func):
+        def inner(*args, **kwargs):
+            attempt = 0
+            while attempt < times:
+                try:
+                    return func(*args, **kwargs)
+                except Exception as e:
+                    logger.error(f'{e}, waiting for retry, {times - attempt} times remains')
+                    attempt += 1
+                    sleep(0.1 * attempt)
+            return func(*args, **kwargs)
+
+        return inner
+
+    return decorator
+
+
+# Internal functions
+@retry(5)
 def _get_response(url, stream=False):
-    max_try_count = 5
-    try_count = 1
-    while try_count <= max_try_count:
-        try:
-            return requests.get(url, stream=stream)
-        except Exception as e:
-            print(f'{e}, waiting for retry, {max_try_count - try_count} times remains')
-            try_count += 1
-            sleep(0.1 * try_count)
-
-
-def _get_html(url):
-    return _get_response(url).text
-
-
-def _get_json(url):
-    return _get_response(url).json()
+    return requests.get(url, stream=stream)
 
 
 def _get_binary(url, output_path, output_name):
@@ -47,6 +62,7 @@ def _get_binary(url, output_path, output_name):
     r = _get_response(url, stream=True)
     output_pathname = os.path.abspath(os.path.join(output_path, output_name))
     if os.path.exists(output_pathname) and USE_CACHE:
+        logger.info(f'{output_pathname} exists, skip')
         return output_pathname
     output_pathname_part = output_pathname + '.part'
     with open(output_pathname_part, 'wb') as f:
@@ -57,14 +73,16 @@ def _get_binary(url, output_path, output_name):
     return output_pathname
 
 
+@retry(5)
 def _get_video(url, output_path):
     os.makedirs(output_path, exist_ok=True)
-    ydl_opt = YOUTUBE_DL_OPTION
-    ydl_opt['outtmpl'] = os.path.join(os.path.abspath(output_path), '%(id)s.%(ext)s')
-    with youtube_dl.YoutubeDL(ydl_opt) as ydl:
+    option = YT_DLP_OPTION.copy()
+    option['outtmpl'] = os.path.join(os.path.abspath(output_path), '%(id)s.%(ext)s')
+    with yt_dlp.YoutubeDL(option) as ydl:
         ydl_info = ydl.extract_info(url)
         output_pathname = os.path.join(os.path.abspath(output_path), f"{ydl_info['id']}.{ydl_info['ext']}")
         if os.path.exists(output_pathname) and USE_CACHE:
+            logger.info(f'{output_pathname} exists, skip')
             return output_pathname
         ydl.download([url])
     return output_pathname
@@ -78,13 +96,17 @@ def _get_output_path(item):
     return os.path.join(DATASET_PATH, item['category'], item['subCategory'], item['id'])
 
 
+# Main functions
 def get_image(item, output_path):
+    logger.info(f'Start to get image for {item["id"]}')
     url = item['mainImageUrl']
     if url:
-        item['mainImagePathname'] = _get_binary(url, output_path, _get_output_name(url))
+        _get_binary(url, output_path, _get_output_name(url))
+    logger.info(f'Finish to get image for {item["id"]}')
 
 
 def get_manual(item, output_path):
+    logger.info(f'Start to get manual for {item["id"]}')
     manual_pix_list = []
     for i, manual in enumerate(item['manualList']):
         url = manual['url']
@@ -94,12 +116,16 @@ def get_manual(item, output_path):
                 os.path.join(output_path, 'manual'),
                 _get_output_name(url)
             )
-            item['manualList'][i]['pathname'] = pathname
             # pageList
             page_list = []
             page_output_path = os.path.join(output_path, 'manual', str(i + 1))
             os.makedirs(page_output_path, exist_ok=True)
             with fitz.open(pathname) as doc:
+                if USE_CACHE:
+                    existing_count = len([file for file in os.listdir(page_output_path) if file.endswith('.png')])
+                    if existing_count == doc.pageCount:
+                        logger.info(f'pages for item {item["id"]} exist, skip')
+                        break
                 pix_list = []
                 for index, page in enumerate(doc):
                     pix = page.get_pixmap(dpi=150)
@@ -112,38 +138,41 @@ def get_manual(item, output_path):
                 item['manualList'][i]['pageList'] = page_list
                 manual_pix_list.append(pix_list)
     # stepList
-    step_list = []
     step_output_path = os.path.join(output_path, 'step')
     os.makedirs(step_output_path, exist_ok=True)
-    for index, step in enumerate(item['annotationList']):
-        step_pix = manual_pix_list[step['manual']][step['page']]
-        img = Image.frombytes("RGB", (step_pix.width, step_pix.height), step_pix.samples)
-        left = max(0, step['x'])
-        top = max(0, step['y'])
-        right = min(step['x'] + step['width'], step_pix.width)
-        bottom = min(step['y'] + step['height'], step_pix.height)
-        img = img.crop((left, top, right, bottom))
-        output_pathname = os.path.join(os.path.abspath(step_output_path), f'step-{index + 1}.png')
-        img.save(output_pathname)
-    item['stepList'] = step_list
+    existing_count = len([file for file in os.listdir(step_output_path) if file.endswith('.png')])
+    if existing_count != len(item['annotationList']) or not USE_CACHE:
+        for index, step in enumerate(item['annotationList']):
+            step_pix = manual_pix_list[step['manual']][step['page']]
+            img = Image.frombytes("RGB", (step_pix.width, step_pix.height), step_pix.samples)
+            left = max(0, step['x'])
+            top = max(0, step['y'])
+            right = min(step['x'] + step['width'], step_pix.width)
+            bottom = min(step['y'] + step['height'], step_pix.height)
+            img = img.crop((left, top, right, bottom))
+            output_pathname = os.path.join(os.path.abspath(step_output_path), f'step-{index + 1}.png')
+            img.save(output_pathname)
+    else:
+        logger.info(f'steps for item {item["id"]} exist, skip')
+    logger.info(f'Finish to get manual for {item["id"]}')
 
 
 def get_video(item, output_path):
+    logger.info(f'Start to get video for {item["id"]}')
     for i, video in enumerate(item['videoList']):
         url = video['url']
         if url:
-            pathname = _get_video(
-                url,
-                os.path.join(output_path, 'video')
-            )
-            item['videoList'][i]['pathname'] = pathname
+            _get_video(url, os.path.join(output_path, 'video'))
+    logger.info(f'Finish to get video for {item["id"]}')
 
 
 def get_item(item):
+    logger.info(f'Start to get item {item["id"]}')
     output_path = _get_output_path(item)
     get_image(item, output_path)
     get_manual(item, output_path)
     get_video(item, output_path)
+    logger.info(f'Finish to get item {item["id"]}')
 
 
 if __name__ == '__main__':

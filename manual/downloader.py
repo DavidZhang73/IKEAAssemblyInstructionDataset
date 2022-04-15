@@ -1,11 +1,9 @@
 import os
 import subprocess
 
-from tqdm.contrib.concurrent import thread_map
-
-from config import DATA_PATH
-from util.database import database
-from util.http import download_binary
+from manual.config import DATA_PATH
+from manual.database import database
+from manual.http import download_binary
 
 
 def _get_output_name(url):

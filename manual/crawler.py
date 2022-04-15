@@ -2,8 +2,8 @@ import bs4
 from bs4 import BeautifulSoup
 from tqdm import tqdm
 
-from util.database import database
-from util.http import get_html, get_json
+from manual.database import database
+from manual.http import get_html, get_json
 
 
 def get_category_list():

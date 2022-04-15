@@ -3,15 +3,12 @@ from time import sleep
 
 import requests
 
-from config import PROXIES
-
-
 def get_response(url, stream=False):
     max_try_count = 5
     try_count = 1
     while try_count <= max_try_count:
         try:
-            return requests.get(url, proxies=PROXIES, stream=stream)
+            return requests.get(url, stream=stream)
         except Exception as e:
             print(f'{e}, waiting for retry, {max_try_count - try_count} times remains')
             try_count += 1

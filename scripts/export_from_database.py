@@ -1,7 +1,7 @@
 import json
 import os
 
-from util.database import database
+from manual.database import database
 
 OUTPUT_PATH = '../dataset'
 OUTPUT_NAME = 'IkeaAssemblyInstructionDataset.json'
