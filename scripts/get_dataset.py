@@ -59,11 +59,11 @@ def _get_response(url, stream=False):
 
 def _get_binary(url, output_path, output_name):
     os.makedirs(output_path, exist_ok=True)
-    r = _get_response(url, stream=True)
     output_pathname = os.path.abspath(os.path.join(output_path, output_name))
     if os.path.exists(output_pathname) and USE_CACHE:
         logger.info(f'{output_pathname} exists, skip')
         return output_pathname
+    r = _get_response(url, stream=True)
     output_pathname_part = output_pathname + '.part'
     with open(output_pathname_part, 'wb') as f:
         for chunk in r.iter_content(chunk_size=1024):
@@ -78,13 +78,13 @@ def _get_video(url, output_path):
     os.makedirs(output_path, exist_ok=True)
     option = YT_DLP_OPTION.copy()
     option['outtmpl'] = os.path.join(os.path.abspath(output_path), '%(id)s.%(ext)s')
-    with yt_dlp.YoutubeDL(option) as ydl:
-        ydl_info = ydl.extract_info(url)
-        output_pathname = os.path.join(os.path.abspath(output_path), f"{ydl_info['id']}.{ydl_info['ext']}")
-        if os.path.exists(output_pathname) and USE_CACHE:
-            logger.info(f'{output_pathname} exists, skip')
-            return output_pathname
-        ydl.download([url])
+    video_id = url.split('watch?v=')[-1]
+    output_pathname = os.path.join(os.path.abspath(output_path), f"{video_id}.mp4")
+    if os.path.exists(output_pathname) and USE_CACHE:
+        logger.info(f'{output_pathname} exists, skip')
+    else:
+        with yt_dlp.YoutubeDL(option) as ydl:
+            ydl.download([url])
     return output_pathname
 
 
