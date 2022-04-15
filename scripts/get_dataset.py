@@ -117,25 +117,18 @@ def get_manual(item, output_path):
                 _get_output_name(url)
             )
             # pageList
-            page_list = []
             page_output_path = os.path.join(output_path, 'manual', str(i + 1))
             os.makedirs(page_output_path, exist_ok=True)
             with fitz.open(pathname) as doc:
-                if USE_CACHE:
-                    existing_count = len([file for file in os.listdir(page_output_path) if file.endswith('.png')])
-                    if existing_count == doc.pageCount:
-                        logger.info(f'pages for item {item["id"]} exist, skip')
-                        break
                 pix_list = []
                 for index, page in enumerate(doc):
                     pix = page.get_pixmap(dpi=150)
                     pix_list.append(pix)
                     output_pathname = os.path.join(os.path.abspath(page_output_path), f'page-{index + 1}.png')
-                    pix.save(output_pathname)
-                    page_list.append({
-                        "pathname": output_pathname
-                    })
-                item['manualList'][i]['pageList'] = page_list
+                    if os.path.exists(output_pathname) and USE_CACHE:
+                        logger.info(f'{output_pathname} exists, skip')
+                    else:
+                        pix.save(output_pathname)
                 manual_pix_list.append(pix_list)
     # stepList
     step_output_path = os.path.join(output_path, 'step')
