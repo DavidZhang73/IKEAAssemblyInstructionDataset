@@ -1,10 +1,14 @@
 const createWindow = require('./create-window.js')
 const initService = require('./service/index.js')
-const { app } = require('electron')
+const { app, session } = require('electron')
 const contextMenu = require('electron-context-menu')
 const path = require('path')
 const { ElectronBlocker } = require('@cliqz/adblocker-electron')
 const fetch = require('node-fetch')
+
+ElectronBlocker.fromPrebuiltAdsAndTracking(fetch).then((blocker) => {
+  blocker.enableBlockingInSession(session.defaultSession);
+});
 
 try {
   require('electron-reloader')(module, { watchRenderer: false })
@@ -41,6 +45,7 @@ function createMainWindow () {
       webviewTag: true
     }
   })
+
   mainWindow.once('close', () => {
     mainWindow = null
   })
@@ -58,9 +63,6 @@ function createMainWindow () {
     console.log('READY')
     mainWindow.show()
     mainWindow.focus()
-    ElectronBlocker.fromPrebuiltAdsAndTracking(fetch).then((blocker) => {
-      blocker.enableBlockingInSession(mainWindow.webContents.session)
-    })
   })
 }
 
