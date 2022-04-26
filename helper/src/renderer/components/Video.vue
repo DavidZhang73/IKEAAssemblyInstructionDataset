@@ -116,7 +116,7 @@ const handleDeleteAll = () => {
 }
 
 watch(() => store.getters.currentItem, () => {
-  const searchQuery = `IKEA ${store.getters.currentItem.name} ${store.getters.currentItem.typeName} assemble ${store.getters.currentItem.id}`
+  const searchQuery = `IKEA ${store.getters.currentItem.name} ${store.getters.currentItem.typeName} assembly ${store.getters.currentItem.id}`
   search.value = `https://www.youtube.com/results?search_query=${encodeURIComponent(searchQuery)}`
 }, { immediate: true })
 </script>
