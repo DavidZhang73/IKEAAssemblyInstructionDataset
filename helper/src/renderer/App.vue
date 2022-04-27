@@ -30,7 +30,7 @@
           :class="[{'w-[30vw]': categoryExpand}, {'w-0': !categoryExpand}]"
       >
         <div class="w-[10vw] overflow-y-auto overflow-x-hidden">
-          <div class="p-1 text-center border-b-[1px] border-gray-200">Category ({{ categoryList.length }})</div>
+          <div class="sticky top-0 bg-white p-1 text-center border-b-[1px] border-gray-200">Category ({{ categoryList.length }})</div>
           <div
               class="p-1 text-sm text-center cursor-pointer"
               :class="[
@@ -44,7 +44,7 @@
           </div>
         </div>
         <div class="w-[10vw] border-r-[1px] border-gray-200 overflow-y-auto overflow-x-hidden">
-          <div class="p-1 text-center border-b-[1px] border-gray-200">Sub Category ({{ subCategoryList.length }})</div>
+          <div class="sticky top-0 bg-white p-1 text-center border-b-[1px] border-gray-200">Sub Category ({{ subCategoryList.length }})</div>
           <div
               class="p-1 text-sm text-center cursor-pointer"
               :class="[
@@ -58,7 +58,7 @@
           </div>
         </div>
         <div class="w-[10vw] border-r-[1px] border-gray-200 overflow-y-auto overflow-x-hidden">
-          <div class="p-1 text-center border-b-[1px] border-gray-200">Item
+          <div class="sticky top-0 bg-white p-1 text-center border-b-[1px] border-gray-200">Item
             ({{ progress }}/{{ $store.getters.currentItemList.length }})
           </div>
           <div
