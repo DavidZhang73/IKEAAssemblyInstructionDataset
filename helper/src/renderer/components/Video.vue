@@ -31,6 +31,7 @@
           ref="webviewRef"
           class="flex-grow"
           :src="search"
+          plugins
       ></webview>
     </div>
     <div
@@ -87,7 +88,7 @@ import {
   TrashIcon,
   ZoomInIcon
 } from '@heroicons/vue/solid'
-import { ref, toRaw, watch } from 'vue'
+import { onMounted, ref, toRaw, watch } from 'vue'
 import { useStore } from 'vuex'
 
 const store = useStore()
@@ -119,4 +120,28 @@ watch(() => store.getters.currentItem, () => {
   const searchQuery = `IKEA ${store.getters.currentItem.name} ${store.getters.currentItem.typeName} assembly ${store.getters.currentItem.id}`
   search.value = `https://www.youtube.com/results?search_query=${encodeURIComponent(searchQuery)}`
 }, { immediate: true })
+
+const getCss = (videoList) => {
+  let selectorList = []
+  for (let video of videoList) {
+    selectorList.push(`a#video-title[href="/${video.url.split('/').at(-1)}"]`)
+  }
+  return `
+    ${selectorList.join(',')} {
+      background-color: #22c55d !important;
+    }
+  `
+}
+
+watch(() => store.getters.currentVideoList, (videoList) => {
+  const webview = webviewRef.value
+  webview.insertCSS(getCss(videoList))
+})
+
+onMounted(() => {
+  const webview = webviewRef.value
+  webview.addEventListener('dom-ready', function () {
+    webview.insertCSS(getCss(store.getters.currentVideoList))
+  })
+})
 </script>
