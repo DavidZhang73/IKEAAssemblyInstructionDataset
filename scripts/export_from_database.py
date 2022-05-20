@@ -4,7 +4,7 @@ import os
 from manual.database import database
 
 OUTPUT_PATH = '../dataset'
-OUTPUT_NAME = 'IkeaAssemblyInstructionDataset.json'
+OUTPUT_NAME = 'IkeaAssemblyInstructionRawDataset.json'
 OUTPUT_PATHNAME = os.path.join(OUTPUT_PATH, OUTPUT_NAME)
 
 ITEM_KEYS_TO_SAVE = ['id', 'name', 'category', 'subCategory', 'typeName', 'pipUrl', 'mainImageUrl', 'variants',
