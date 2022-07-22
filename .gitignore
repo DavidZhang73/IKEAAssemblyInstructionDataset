@@ -141,5 +141,5 @@ cython_debug/
 .idea
 data
 dataset/*
-!dataset/IkeaAssemblyInstructionDataset.json
+!dataset/IkeaAssemblyInstructionDatasetFinal.json
 notebook
